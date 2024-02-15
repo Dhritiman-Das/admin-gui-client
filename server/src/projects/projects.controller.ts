@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -45,7 +46,7 @@ export class ProjectsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectsService.update(+id, updateProjectDto);
+    return this.projectsService.update(id, updateProjectDto);
   }
 
   @Delete(':id')
@@ -60,11 +61,19 @@ export class ProjectsController {
     @Body() createQueryDto: CreateQueryDto,
     @Req() req: any,
   ) {
-    console.log({ createQueryDto });
-    console.log({ user: req.user });
-
     const userId = req.user.userId as string;
+    console.log({ userId });
+
     return this.queryService.create(createQueryDto, userId, projectId);
+  }
+
+  @Patch(':projectId/query/:queryId')
+  updateQuery(
+    @Param('projectId') projectId: string,
+    @Param('queryId') queryId: string,
+    @Body() updateQueryDto: any,
+  ) {
+    return this.queryService.update(queryId, updateQueryDto);
   }
 
   @Post('/:projectId/query/:queryId/execute')
@@ -81,6 +90,27 @@ export class ProjectsController {
       projectId,
       userId,
     });
+  }
+
+  @Get('/:projectId/query')
+  listQueries(@Param('projectId') projectId: string) {
+    return this.projectsService.listQueries({ projectId });
+  }
+
+  @Get('/:projectId/query/:queryId')
+  getQuery(
+    @Param('projectId') projectId: string,
+    @Param('queryId') queryId: string,
+  ) {
+    return this.projectsService.listQuery({ projectId, queryId });
+  }
+
+  @Delete('/:projectId/query/:queryId')
+  deleteQuery(
+    @Param('projectId') projectId: string,
+    @Param('queryId') queryId: string,
+  ) {
+    return this.projectsService.deleteQuery({ projectId, queryId });
   }
 
   @Get('/:projectId/db-details')

@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { HistoryService } from './history.service';
 import { CreateHistoryDto } from './dto/create-history.dto';
 import { UpdateHistoryDto } from './dto/update-history.dto';
@@ -12,15 +20,37 @@ export class HistoryController {
     return this.historyService.create(createHistoryDto);
   }
 
+  @Get('/projects/:projectId')
+  getHistory(@Param('projectId') projectId: string) {
+    return this.historyService.find({
+      query: { project: projectId },
+      populate: [
+        { path: 'user', select: '_id name profilePic' },
+        { path: 'query', select: '_id name dbName dbCollectionName' },
+      ],
+    });
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.historyService.findOne({
+      query: { _id: id },
+      populate: [
+        { path: 'user', select: '_id name profilePic' },
+        { path: 'query', select: '_id name dbName dbCollectionName' },
+      ],
+    });
+  }
+
   @Get()
   findAll() {
     return this.historyService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.historyService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.historyService.findOne(+id);
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateHistoryDto: UpdateHistoryDto) {

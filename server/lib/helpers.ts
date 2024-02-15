@@ -8,3 +8,18 @@ export function generateQuery(
   }
   return query;
 }
+
+export function extractVariables(query) {
+  const regex = /var\((.*?)\)/g;
+  const variables = [];
+  let match;
+
+  while ((match = regex.exec(query)) !== null) {
+    variables.push({
+      variable: match[1],
+      type: 'string',
+    });
+  }
+
+  return variables;
+}

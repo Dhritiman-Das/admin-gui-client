@@ -38,12 +38,83 @@ export class ProjectsService {
     });
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(id: string, updateProjectDto: UpdateProjectDto) {
+    return await this.projectMongoService.findOneAndUpdate({
+      query: { _id: id },
+      update: updateProjectDto,
+    });
   }
 
   remove(id: number) {
     return `This action removes a #${id} project`;
+  }
+
+  async listQueries({
+    projectId,
+    queryId,
+  }: {
+    projectId?: string;
+    queryId?: string;
+  }) {
+    if (!!!projectId && !!!queryId) {
+      throw new Error('projectId or queryId is required');
+    }
+    const query = {};
+    if (projectId) {
+      query['project'] = projectId;
+    }
+
+    if (queryId) {
+      query['_id'] = queryId;
+    }
+
+    return await this.queryService.find({
+      query: query,
+      populate: {
+        path: 'author',
+        select: 'name profilePic',
+      },
+    });
+  }
+
+  async listQuery({
+    projectId,
+    queryId,
+  }: {
+    projectId?: string;
+    queryId?: string;
+  }) {
+    if (!!!projectId && !!!queryId) {
+      throw new Error('projectId or queryId is required');
+    }
+    const query = {};
+    if (projectId) {
+      query['project'] = projectId;
+    }
+
+    if (queryId) {
+      query['_id'] = queryId;
+    }
+
+    return await this.queryService.findOne({
+      query: query,
+      populate: {
+        path: 'author',
+        select: 'name profilePic',
+      },
+    });
+  }
+
+  async deleteQuery({
+    projectId,
+    queryId,
+  }: {
+    projectId: string;
+    queryId: string;
+  }) {
+    return await this.queryService.remove({
+      query: { _id: queryId },
+    });
   }
 
   async listDbDetails(projectId: string) {
@@ -90,6 +161,7 @@ export class ProjectsService {
         projection: { dbCollectionName: 1, dbName: 1, queryString: 1 },
       });
     return await this.queryService.executeQuery({
+      projectId,
       dbConnectionString,
       dbName,
       dbCollectionName,

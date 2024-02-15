@@ -20,4 +20,50 @@ export class HistoryMongoService {
       );
     }
   }
+
+  async find({
+    query,
+    projection,
+    options,
+    populate,
+  }: {
+    query: any;
+    projection?: any;
+    options?: any;
+    populate?: any;
+  }) {
+    try {
+      return await this.historyModel
+        .find(query, projection, options)
+        .populate(populate);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Internal server error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findOne({
+    query,
+    projection,
+    options,
+    populate,
+  }: {
+    query: any;
+    projection?: any;
+    options?: any;
+    populate?: any;
+  }) {
+    try {
+      return await this.historyModel
+        .findOne(query, projection, options)
+        .populate(populate);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Internal server error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

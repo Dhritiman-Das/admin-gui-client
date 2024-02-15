@@ -14,7 +14,7 @@ export class UsersService {
     const user = await this.userMongoService.create(createUserDto);
 
     const project = await this.projectService.create({
-      name: '',
+      name: createUserDto.name,
       description: '',
       dbConnectionString: '',
       admin: user,
@@ -48,7 +48,7 @@ export class UsersService {
     projection?: any;
     options?: any;
   }) {
-    return await this.userMongoService.findOne({ query });
+    return await this.userMongoService.findOne({ query, options, projection });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

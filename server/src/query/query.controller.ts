@@ -29,18 +29,18 @@ export class QueryController {
     return this.queryService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.queryService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.queryService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQueryDto: UpdateQueryDto) {
-    return this.queryService.update(+id, updateQueryDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateQueryDto: UpdateQueryDto) {
+  //   return this.queryService.update(+id, updateQueryDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.queryService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.queryService.remove(+id);
+  // }
 }

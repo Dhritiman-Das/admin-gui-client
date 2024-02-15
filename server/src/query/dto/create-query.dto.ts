@@ -3,9 +3,9 @@ import { Project } from 'src/mongo/project-mongo/project-mongo.schema';
 import { User } from 'src/mongo/user-mongo/user-mongo.schema';
 
 export class CreateQueryDto {
-  @IsString()
-  @IsNotEmpty()
-  author: User;
+  // @IsString()
+  // @IsNotEmpty()
+  // author: User;
 
   @IsString()
   @IsNotEmpty()

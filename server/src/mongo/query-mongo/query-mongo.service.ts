@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Query } from './query-mongo.schema';
@@ -21,15 +26,73 @@ export class QueryMongoService {
     }
   }
 
+  async findOneAndUpdate({
+    query,
+    update,
+    options,
+  }: {
+    query: any;
+    update: any;
+    options?: any;
+  }) {
+    const queryDoc = await this.queryModel.findByIdAndUpdate(query, update, {
+      new: true,
+      ...options,
+    });
+    if (!!!queryDoc) {
+      throw new NotFoundException('Query not found');
+    }
+    return queryDoc;
+  }
+
   async findOne({
     query,
     projection,
     options,
+    populate,
   }: {
     query: any;
     projection?: any;
     options?: any;
+    populate?: any;
   }) {
-    return await this.queryModel.findOne(query, projection, options).exec();
+    const queryDoc = await this.queryModel
+      .findOne(query, projection, options)
+      .populate(populate);
+    console.log({ queryDoc });
+
+    if (!!!queryDoc) {
+      console.log('Query not found');
+
+      throw new NotFoundException('Query not found');
+    }
+    return queryDoc;
+  }
+
+  async find({
+    query,
+    projection,
+    options,
+    populate,
+  }: {
+    query: any;
+    projection?: any;
+    options?: any;
+    populate?: any;
+  }) {
+    const queryDoc = await this.queryModel
+      .find(query, projection, options)
+      .sort({ createdAt: -1 })
+      .populate(populate);
+
+    return queryDoc;
+  }
+
+  async remove({ query }: { query: any }) {
+    const queryDoc = await this.queryModel.findOneAndDelete(query);
+    if (!!!queryDoc) {
+      throw new NotFoundException('Query not found');
+    }
+    return { message: 'Query deleted' };
   }
 }

@@ -2,7 +2,6 @@ import { signJwtAccessToken } from "@/lib/jwt";
 import NextAuth, { Session as NextAuthSession } from "next-auth";
 import { User as NextAuthUser } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
-import axios from "axios";
 import { checkIfUserExist, createUser } from "@/routes/user-routes";
 
 export interface MySession extends NextAuthSession {

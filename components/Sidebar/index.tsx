@@ -7,30 +7,82 @@ import {
   User,
   Building2,
   Users,
+  LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import TeamSwitcher from "./teamSwitcher";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
-const navigation = {
-  top: [
-    { name: "Query", href: "query", icon: ScanText, current: true },
-    { name: "Mutate", href: "mutate", icon: NotebookPen, current: false },
-    { name: "History", href: "history", icon: History, current: false },
-    { name: "Members", href: "members", icon: Users, current: false },
-  ],
-  bottom: [
-    { name: "Project", href: "project", icon: Building2, current: true },
-    { name: "Profile", href: "profile", icon: User, current: true },
-    { name: "Log out", href: "/api/auth/signout", icon: LogOut, current: true },
-  ],
+type SingleNavigation = {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  current: boolean;
+};
+
+type Navigation = {
+  top: SingleNavigation[];
+  bottom: SingleNavigation[];
 };
 
 export default function Sidebar() {
   const pathName = usePathname();
-
+  const [navigation, setNavigation] = React.useState<Navigation>({
+    top: [],
+    bottom: [],
+  });
+  useEffect(() => {
+    setNavigation({
+      top: [
+        {
+          name: "Query",
+          href: `/home/${localStorage.getItem("projectId")}/query`,
+          icon: ScanText,
+          current: pathName.includes("query"),
+        },
+        {
+          name: "Mutate",
+          href: `/home/${localStorage.getItem("projectId")}/mutate`,
+          icon: NotebookPen,
+          current: pathName.includes("mutate"),
+        },
+        {
+          name: "History",
+          href: `/home/${localStorage.getItem("projectId")}/history`,
+          icon: History,
+          current: pathName.includes("history"),
+        },
+        {
+          name: "Members",
+          href: `/home/${localStorage.getItem("projectId")}/members`,
+          icon: Users,
+          current: pathName.includes("members"),
+        },
+      ],
+      bottom: [
+        {
+          name: "Project",
+          href: `/home/${localStorage.getItem("projectId")}/project`,
+          icon: Building2,
+          current: pathName.includes("project"),
+        },
+        {
+          name: "Profile",
+          href: "/home/profile",
+          icon: User,
+          current: pathName.includes("profile"),
+        },
+        {
+          name: "Log out",
+          href: "/api/auth/signout",
+          icon: LogOut,
+          current: false,
+        },
+      ],
+    });
+  }, [pathName]);
   return (
     <aside
       id="sidebar"
@@ -45,6 +97,8 @@ export default function Sidebar() {
             key={item.name + index}
             href={item.href}
             className={`flex items-center rounded-lg px-3 py-2 ${
+              item.current ? "bg-secondary" : ""
+            } ${
               item.href === pathName.split("/")[2] ? "bg-secondary" : ""
             } hover:bg-secondary text-primary`}
           >
@@ -58,6 +112,8 @@ export default function Sidebar() {
               key={item.name + index}
               href={item.href}
               className={`flex items-center rounded-lg px-3 py-2 ${
+                item.current ? "bg-secondary" : ""
+              } ${
                 item.href === pathName.split("/")[2] ? "bg-secondary" : ""
               } hover:bg-secondary text-primary`}
             >

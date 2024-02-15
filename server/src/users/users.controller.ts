@@ -47,7 +47,9 @@ export class UsersController {
     const userId = req.user.userId;
     console.log({ userId });
 
-    return this.usersService.findOne({ query: { _id: userId } });
+    return this.usersService.findOne({
+      query: { _id: userId },
+    });
   }
 
   @Get()

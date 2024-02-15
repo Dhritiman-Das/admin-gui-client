@@ -24,9 +24,13 @@ export class QueryService {
     const user = await this.userMongoService.findOne({
       query: { _id: userId },
     });
+    console.log({ user });
+
     const project = await this.projectMongoService.findOne({
       query: { _id: projectId },
     });
+    console.log({ project });
+
     return await this.queryMongoService.create({
       ...createQueryDto,
       author: user,
@@ -34,23 +38,61 @@ export class QueryService {
     });
   }
 
+  async update(queryId: string, updateQueryDto: UpdateQueryDto) {
+    return await this.queryMongoService.findOneAndUpdate({
+      query: { _id: queryId },
+      update: updateQueryDto,
+    });
+  }
+
   findAll() {
     return `This action returns all query`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} query`;
+  find({
+    query,
+    projection,
+    options,
+    populate,
+  }: {
+    query: any;
+    projection?: any;
+    options?: any;
+    populate?: any;
+  }) {
+    return this.queryMongoService.find({
+      query,
+      projection,
+      options,
+      populate,
+    });
   }
 
-  update(id: number, updateQueryDto: UpdateQueryDto) {
-    return `This action updates a #${id} query`;
+  findOne({
+    query,
+    projection,
+    options,
+    populate,
+  }: {
+    query: any;
+    projection?: any;
+    options?: any;
+    populate?: any;
+  }) {
+    return this.queryMongoService.findOne({
+      query,
+      projection,
+      options,
+      populate,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} query`;
+  remove({ query }: { query: any }) {
+    return this.queryMongoService.remove({ query });
   }
 
   async executeQuery(items: {
+    projectId: string;
     dbConnectionString: string;
     dbName: string;
     dbCollectionName: string;
@@ -60,6 +102,7 @@ export class QueryService {
     userId: string;
   }) {
     const {
+      projectId,
       dbConnectionString,
       dbName,
       dbCollectionName,
@@ -86,6 +129,9 @@ export class QueryService {
       const result = await collection.find(query).toArray();
       console.log({ result });
       await this.historyService.create({
+        project: await this.projectMongoService.findOne({
+          query: { _id: projectId },
+        }),
         user: await this.userMongoService.findOne({ query: { _id: userId } }),
         query: await this.queryMongoService.findOne({
           query: { _id: queryId },
@@ -97,6 +143,9 @@ export class QueryService {
     } catch (error) {
       console.error({ error });
       await this.historyService.create({
+        project: await this.projectMongoService.findOne({
+          query: { _id: projectId },
+        }),
         user: await this.userMongoService.findOne({ query: { _id: userId } }),
         query: await this.queryMongoService.findOne({
           query: { _id: queryId },

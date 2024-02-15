@@ -14,8 +14,42 @@ export class HistoryService {
     return `This action returns all history`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} history`;
+  async find({
+    query,
+    projection,
+    options,
+    populate,
+  }: {
+    query: any;
+    projection?: any;
+    options?: any;
+    populate?: any;
+  }) {
+    return await this.historyMongoService.find({
+      query,
+      projection,
+      options,
+      populate,
+    });
+  }
+
+  findOne({
+    query,
+    projection,
+    options,
+    populate,
+  }: {
+    query: any;
+    projection?: any;
+    options?: any;
+    populate?: any;
+  }) {
+    return this.historyMongoService.findOne({
+      query,
+      projection,
+      options,
+      populate,
+    });
   }
 
   update(id: number, updateHistoryDto: UpdateHistoryDto) {

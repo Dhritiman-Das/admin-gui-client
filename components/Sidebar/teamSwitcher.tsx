@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -25,39 +25,12 @@ import { Check, PlusCircle, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-const groups = [
-  {
-    label: "Personal Account",
-    teams: [
-      {
-        label: "Alicia Koch",
-        value: "personal",
-      },
-    ],
-  },
-  {
-    label: "Teams",
-    teams: [
-      {
-        label: "Acme Inc.",
-        value: "acme-inc",
-      },
-      {
-        label: "Monsters Inc.",
-        value: "monsters",
-      },
-    ],
-  },
-];
-
-type Team = (typeof groups)[number]["teams"][number];
+import { useQuery } from "@tanstack/react-query";
+import { getUserInfo } from "@/routes/user-routes";
+import { MySession } from "@/app/api/auth/[...nextauth]/route";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Skeleton } from "../ui/skeleton";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -65,12 +38,53 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
+type Project = {
+  name: string;
+  _id: string;
+  mode: "personal" | "teams";
+};
+
 export default function TeamSwitcher({ className }: TeamSwitcherProps) {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [currentProjectId, setCurrentProjectId] = React.useState<string | null>(
+    null
+  );
+  const jwtToken = (session as MySession)?.userToken;
+  const [projects, setProjects] = React.useState<Project[]>([]);
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
-  const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-    groups[0].teams[0]
-  );
+  useEffect(() => {
+    console.log(
+      "projectId from locastorage ",
+      localStorage.getItem("projectId")
+    );
+
+    setCurrentProjectId(localStorage.getItem("projectId"));
+  }, []);
+  const {
+    isPending,
+    error,
+    data: response,
+  } = useQuery({
+    queryKey: ["user/me"],
+    queryFn: () => getUserInfo(jwtToken as string),
+    enabled: !!jwtToken,
+  });
+  useEffect(() => {
+    if (response?.status === 200) {
+      setProjects(response.data.projects);
+    }
+  }, [response]);
+  useEffect(() => {
+    console.log(
+      { projects },
+      projects.find((project) => project._id === currentProjectId)
+    );
+  }, [projects]);
+  if (error) {
+    <div className="">Error</div>;
+  }
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
       <Popover open={open} onOpenChange={setOpen}>
@@ -82,15 +96,14 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             aria-label="Select a team"
             className={cn("w-full justify-between", className)}
           >
-            <Avatar className="mr-2 h-5 w-5">
-              <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
-                alt={selectedTeam.label}
-                className="grayscale"
-              />
-              <AvatarFallback>SC</AvatarFallback>
-            </Avatar>
-            {selectedTeam.label}
+            {isPending ? (
+              <Skeleton className="h-[10px] w-[150px]" />
+            ) : (
+              <div className="truncate">
+                {projects.find((project) => project._id === currentProjectId)
+                  ?.name || "no name"}
+              </div>
+            )}
             <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -99,30 +112,23 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             <CommandList>
               <CommandInput placeholder="Search team..." />
               <CommandEmpty>No team found.</CommandEmpty>
-              {groups.map((group) => (
-                <CommandGroup key={group.label} heading={group.label}>
-                  {group.teams.map((team) => (
+              {projects.map((project, index) => (
+                <CommandGroup key={project._id + index} heading={project.name}>
+                  {projects.map((project) => (
                     <CommandItem
-                      key={team.value}
+                      key={project._id}
                       onSelect={() => {
-                        setSelectedTeam(team);
+                        setCurrentProjectId(project._id);
                         setOpen(false);
+                        router.refresh();
                       }}
                       className="text-sm"
                     >
-                      <Avatar className="mr-2 h-5 w-5">
-                        <AvatarImage
-                          src={`https://avatar.vercel.sh/${team.value}.png`}
-                          alt={team.label}
-                          className="grayscale"
-                        />
-                        <AvatarFallback>SC</AvatarFallback>
-                      </Avatar>
-                      {team.label}
+                      {project.name}
                       <Check
                         className={cn(
                           "ml-auto h-4 w-4",
-                          selectedTeam.value === team.value
+                          currentProjectId === project._id
                             ? "opacity-100"
                             : "opacity-0"
                         )}

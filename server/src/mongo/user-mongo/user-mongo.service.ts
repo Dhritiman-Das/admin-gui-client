@@ -37,7 +37,7 @@ export class UserMongoService {
     options?: any;
   }) {
     return await this.userModel
-      .findOneAndUpdate(query, update, options)
+      .findOneAndUpdate(query, update, { ...options, lean: true })
       .populate({
         path: 'projects',
         select: 'name mode',
@@ -54,7 +54,7 @@ export class UserMongoService {
     options?: any;
   }) {
     const user = await this.userModel
-      .findOne(query, projection, options)
+      .findOne(query, projection, { ...options, lean: true })
       .populate({
         path: 'projects',
         select: 'name mode dbConnectionString',
@@ -66,8 +66,8 @@ export class UserMongoService {
           project.mode === 'personal' && !!!project.dbConnectionString,
       )
     ) {
-      return { user, hasPersonalProject: false };
+      return { ...user, personalProjectSetup: false };
     }
-    return { user, hasPersonalProject: true };
+    return { ...user, personalProjectSetup: true };
   }
 }
