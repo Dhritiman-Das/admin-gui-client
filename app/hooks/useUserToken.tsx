@@ -1,3 +1,4 @@
+"use client";
 import { useSession } from "next-auth/react";
 import { MySession } from "../api/auth/[...nextauth]/route";
 

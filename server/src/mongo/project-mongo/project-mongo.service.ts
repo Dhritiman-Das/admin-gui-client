@@ -18,12 +18,17 @@ export class ProjectMongoService {
     query,
     projection,
     options,
+    populate,
   }: {
     query: any;
     projection?: any;
     options?: any;
+    populate?: any;
   }) {
-    return await this.projectModel.findOne(query, projection, options).exec();
+    return await this.projectModel
+      .findOne(query, projection, options)
+      .populate(populate)
+      .exec();
   }
 
   async findOneAndUpdate({

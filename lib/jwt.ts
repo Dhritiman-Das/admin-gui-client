@@ -19,8 +19,12 @@ export function signJwtAccessToken(
 
 export function verifyJwt(token: string) {
   try {
+    console.log({ token, envKey: process.env.JWT_SECRET_KEY });
+
     const secret_key = process.env.JWT_SECRET_KEY;
     const decoded = jwt.verify(token, secret_key!);
+    console.log({ secret_key, decoded });
+
     return decoded as JwtPayload;
   } catch (error) {
     console.log(error);

@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MongoClient } from 'mongodb';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -6,16 +11,25 @@ import { ProjectMongoService } from 'src/mongo/project-mongo/project-mongo.servi
 import { QueryService } from 'src/query/query.service';
 import { QueryMongoService } from 'src/mongo/query-mongo/query-mongo.service';
 import { UserMongoService } from 'src/mongo/user-mongo/user-mongo.service';
+import { AddMembersDto } from './dto/add-members.dto';
+import { User } from 'src/mongo/user-mongo/user-mongo.schema';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     private readonly projectMongoService: ProjectMongoService,
+    private readonly userMongoService: UserMongoService,
     private readonly queryMongoService: QueryMongoService,
     private readonly queryService: QueryService,
   ) {}
   async create(createProjectDto: CreateProjectDto) {
-    return await this.projectMongoService.create(createProjectDto);
+    const user = await this.userMongoService.findOneNormal({
+      query: { _id: createProjectDto.admin },
+    });
+
+    return await this.projectMongoService.create({
+      ...createProjectDto,
+    });
   }
 
   findAll() {
@@ -170,5 +184,122 @@ export class ProjectsService {
       executeQueryDto,
       userId,
     });
+  }
+
+  async listMembers(projectId: string) {
+    return await this.userMongoService.findAll({
+      query: {
+        projects: {
+          $elemMatch: { project: projectId },
+        },
+      },
+      projection: {
+        name: 1,
+        email: 1,
+        profilePic: 1,
+        'projects.$': 1,
+      },
+    });
+  }
+
+  async addMembers({
+    projectId,
+    addMembersDto,
+  }: {
+    projectId: string;
+    addMembersDto: AddMembersDto;
+  }) {
+    const project = await this.projectMongoService.findOne({
+      query: { _id: projectId },
+    });
+
+    // Check if the project is already present in the user's projects
+    const userWithProject = await this.userMongoService.findOne({
+      query: {
+        email: addMembersDto.email,
+        projects: { $elemMatch: { project: projectId } },
+      },
+    });
+
+    if (userWithProject) {
+      throw new BadRequestException(
+        "Project is already present in the user's projects",
+      );
+    }
+
+    const user = await this.userMongoService.findOneAndUpdate({
+      query: { email: addMembersDto.email },
+      update: {
+        $push: {
+          projects: {
+            project,
+            role: addMembersDto.role,
+            isAdvancedSettings: addMembersDto.isAdvancedRolesOpen,
+            advancedSettings: addMembersDto.advancedRoles,
+          },
+        },
+      },
+    });
+
+    return {
+      message: 'User added successfully.',
+      userId: user._id,
+    };
+  }
+
+  async updateMember({
+    projectId,
+    userId,
+    updateMemberDto,
+  }: {
+    projectId: string;
+    userId: string;
+    updateMemberDto: AddMembersDto;
+  }) {
+    const project = await this.projectMongoService.findOne({
+      query: { _id: projectId },
+    });
+
+    const user = await this.userMongoService.findOneAndUpdate({
+      query: { _id: userId, 'projects.project': projectId },
+      update: {
+        $set: {
+          'projects.$.role': updateMemberDto.role,
+          'projects.$.isAdvancedSettings': updateMemberDto.isAdvancedRolesOpen,
+          'projects.$.advancedSettings': updateMemberDto.advancedRoles,
+        },
+      },
+    });
+
+    return {
+      message: 'User updated successfully.',
+      userId: user._id,
+    };
+  }
+
+  async removeMember({
+    projectId,
+    userId,
+  }: {
+    projectId: string;
+    userId: string;
+  }) {
+    const user = await this.userMongoService.findOneAndUpdate({
+      query: { _id: userId },
+      update: {
+        $pull: {
+          projects: { project: projectId },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return {
+      message: 'User removed successfully.',
+      userId: user._id,
+    };
   }
 }

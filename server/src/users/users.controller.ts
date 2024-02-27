@@ -14,6 +14,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from 'src/decorators/public.decorator';
+import { Project } from 'src/mongo/project-mongo/project-mongo.schema';
 
 @Controller('users')
 export class UsersController {
@@ -22,8 +23,6 @@ export class UsersController {
   @Public()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    console.log({ createUserDto });
-
     return this.usersService.create(createUserDto);
   }
 
@@ -34,7 +33,6 @@ export class UsersController {
     const user = await this.usersService.checkIfUserExist(
       checkIfUserExistDto.email,
     );
-    console.log({ user });
 
     if (user) {
       return { userExist: true, _id: user._id };
@@ -45,10 +43,16 @@ export class UsersController {
   @Get('me')
   getMe(@Req() req: any) {
     const userId = req.user.userId;
-    console.log({ userId });
-
     return this.usersService.findOne({
       query: { _id: userId },
+      populate: {
+        path: 'projects',
+        populate: {
+          path: 'project',
+          select: 'name mode dbConnectionString ',
+          model: 'Project',
+        },
+      },
     });
   }
 
@@ -62,9 +66,14 @@ export class UsersController {
     return this.usersService.findOne({ query: { _id: id } });
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Patch('')
+  update(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    const userId = req.user.userId;
+    return this.usersService.update(userId, updateUserDto);
   }
 
   @Delete(':id')

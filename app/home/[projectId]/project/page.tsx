@@ -8,11 +8,14 @@ import { Pencil } from "lucide-react";
 import ReadValues from "./readValues";
 import EditValues from "./editValues";
 import { MySession } from "@/app/api/auth/[...nextauth]/route";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProjectInfo, updateProject } from "@/routes/project-routes";
 import { Project, ProjectEdit } from "@/types/project";
 import { toast } from "sonner";
 import { AuthRequiredError } from "@/lib/exceptions";
+import { useMutation } from "@/app/hooks/customMutation";
+import LoadingScreen from "@/components/loadingScreen";
+import ErrorScreen from "@/components/errorScreen";
 
 export default function page() {
   const queryClient = useQueryClient();
@@ -97,6 +100,8 @@ export default function page() {
       }
     );
   };
+  if (isPending) return <LoadingScreen />;
+  if (error) return <ErrorScreen error={error} />;
   return (
     <>
       <div className="heading mb-4 flex items-center justify-between">

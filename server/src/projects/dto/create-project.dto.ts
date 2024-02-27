@@ -26,10 +26,6 @@ export class CreateProjectDto {
   @IsNotEmpty()
   admin: User;
 
-  @IsArray()
-  @IsOptional()
-  members: User[];
-
   @IsBoolean()
   @IsOptional()
   deleted?: boolean;

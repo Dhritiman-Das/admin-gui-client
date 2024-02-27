@@ -59,11 +59,8 @@ export class QueryMongoService {
     const queryDoc = await this.queryModel
       .findOne(query, projection, options)
       .populate(populate);
-    console.log({ queryDoc });
 
     if (!!!queryDoc) {
-      console.log('Query not found');
-
       throw new NotFoundException('Query not found');
     }
     return queryDoc;

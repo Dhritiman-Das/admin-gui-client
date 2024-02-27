@@ -24,6 +24,7 @@ export class HistoryController {
   getHistory(@Param('projectId') projectId: string) {
     return this.historyService.find({
       query: { project: projectId },
+      options: { sort: { createdAt: -1 } },
       populate: [
         { path: 'user', select: '_id name profilePic' },
         { path: 'query', select: '_id name dbName dbCollectionName' },

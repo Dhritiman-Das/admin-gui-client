@@ -29,7 +29,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserInfo } from "@/routes/user-routes";
 import { MySession } from "@/app/api/auth/[...nextauth]/route";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import {
+  useRouter,
+  useParams,
+  useSearchParams,
+  usePathname,
+} from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
@@ -38,28 +43,63 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 
 interface TeamSwitcherProps extends PopoverTriggerProps {}
 
+// type Project = {
+//     name: string;
+//     _id: string;
+//     mode: "personal" | "teams";
+// };
+
 type Project = {
-  name: string;
-  _id: string;
-  mode: "personal" | "teams";
+  project: {
+    _id: string;
+    mode: "personal" | "teams";
+    name: string;
+    dbConnectionString: string;
+  };
+  role: string;
+  isAdvancedSettings: boolean;
+  advancedSettings: {
+    query: string;
+    mutate: string;
+    members: string;
+    projects: string;
+  };
+};
+type ProjectGroups = {
+  personal?: Project[];
+  teams?: Project[];
 };
 
+function replaceProjectIdInUrl(
+  relativeUrl: string,
+  newProjectId: string
+): string {
+  const urlParts = relativeUrl.split("/");
+
+  // Replace the projectId in the path
+  if (urlParts[2]) {
+    urlParts[2] = newProjectId;
+  }
+
+  return urlParts.join("/");
+}
 export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathName = usePathname();
   const { data: session } = useSession();
   const [currentProjectId, setCurrentProjectId] = React.useState<string | null>(
     null
   );
   const jwtToken = (session as MySession)?.userToken;
   const [projects, setProjects] = React.useState<Project[]>([]);
+  const [projectObject, setProjectObject] = React.useState<ProjectGroups>({
+    teams: [],
+    personal: [],
+  });
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
   useEffect(() => {
-    console.log(
-      "projectId from locastorage ",
-      localStorage.getItem("projectId")
-    );
-
     setCurrentProjectId(localStorage.getItem("projectId"));
   }, []);
   const {
@@ -73,15 +113,39 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   });
   useEffect(() => {
     if (response?.status === 200) {
-      setProjects(response.data.projects);
+      const projectsArray: Project[] = response.data.projects;
+      const projectsObject = projectsArray.reduce(
+        (acc: ProjectGroups, curr) => {
+          const projectType = curr.project.mode;
+          if (!acc[projectType]) {
+            acc[projectType] = [];
+          }
+          acc[projectType]!.push(curr);
+          return acc;
+        },
+        {}
+      );
+      console.log({ projectsObject });
+
+      setProjectObject(projectsObject);
+      setProjects(projectsArray);
     }
   }, [response]);
   useEffect(() => {
     console.log(
       { projects },
-      projects.find((project) => project._id === currentProjectId)
+      projects.find((projectObj) => projectObj.project._id === currentProjectId)
     );
   }, [projects]);
+  function switchToNewProject(projectId: string) {
+    setCurrentProjectId(projectId);
+    localStorage.setItem("projectId", projectId);
+    setOpen(false);
+    const url = `${pathName}?${searchParams}`;
+    const newUrl = replaceProjectIdInUrl(url, projectId);
+    router.replace(newUrl);
+  }
+
   if (error) {
     <div className="">Error</div>;
   }
@@ -100,8 +164,9 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
               <Skeleton className="h-[10px] w-[150px]" />
             ) : (
               <div className="truncate">
-                {projects.find((project) => project._id === currentProjectId)
-                  ?.name || "no name"}
+                {projects.find(
+                  (projectObj) => projectObj.project._id === currentProjectId
+                )?.project.name || "no name"}
               </div>
             )}
             <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
@@ -112,23 +177,68 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             <CommandList>
               <CommandInput placeholder="Search team..." />
               <CommandEmpty>No team found.</CommandEmpty>
-              {projects.map((project, index) => (
-                <CommandGroup key={project._id + index} heading={project.name}>
+              <CommandGroup heading="Personal">
+                {projectObject.personal?.map((project) => (
+                  <CommandItem
+                    key={"Project" + project.project._id}
+                    onSelect={() => {
+                      switchToNewProject(project.project._id);
+                    }}
+                    className="text-sm"
+                  >
+                    {project.project.name}
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        currentProjectId === project.project._id
+                          ? "opacity-100"
+                          : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+              <CommandGroup heading="Teams">
+                {projectObject.teams?.map((project) => (
+                  <CommandItem
+                    key={"Project" + project.project._id}
+                    onSelect={() => {
+                      switchToNewProject(project.project._id);
+                    }}
+                    className="text-sm"
+                  >
+                    {project.project.name}
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        currentProjectId === project.project._id
+                          ? "opacity-100"
+                          : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+              {/* {projects.map((project, index) => (
+                <CommandGroup
+                  key={project.project._id + index}
+                  heading={project.project.name}
+                >
                   {projects.map((project) => (
                     <CommandItem
-                      key={project._id}
+                      key={"Project" + project.project._id}
                       onSelect={() => {
-                        setCurrentProjectId(project._id);
+                        setCurrentProjectId(project.project._id);
                         setOpen(false);
                         router.refresh();
                       }}
                       className="text-sm"
                     >
-                      {project.name}
+                      {project.project.name}
                       <Check
                         className={cn(
                           "ml-auto h-4 w-4",
-                          currentProjectId === project._id
+                          currentProjectId === project.project._id
                             ? "opacity-100"
                             : "opacity-0"
                         )}
@@ -136,7 +246,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                     </CommandItem>
                   ))}
                 </CommandGroup>
-              ))}
+              ))} */}
             </CommandList>
             <CommandSeparator />
             <CommandList>

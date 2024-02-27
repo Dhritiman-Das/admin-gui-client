@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -15,6 +15,9 @@ import { ExecutionModule } from './execution/execution.module';
 import { AuthModule } from './auth/auth.module';
 import { HistoryMongoModule } from './mongo/history-mongo/history-mongo.module';
 import { HistoryModule } from './history/history.module';
+import { CaslModule } from './casl/casl.module';
+import { LoggingMiddleware } from './middleware/logging.middleware';
+import { RateLimitingMiddleware } from './middleware/rate-limiting.middleware';
 
 @Module({
   imports: [
@@ -30,8 +33,13 @@ import { HistoryModule } from './history/history.module';
     AuthModule,
     HistoryMongoModule,
     HistoryModule,
+    CaslModule,
   ],
   controllers: [AppController],
   providers: [AppService, UserMongoService, ProjectMongoService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggingMiddleware, RateLimitingMiddleware).forRoutes('*');
+  }
+}

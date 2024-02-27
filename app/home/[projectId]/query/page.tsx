@@ -7,12 +7,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getQueries } from "@/routes/project-routes";
 import { useEffect, useState } from "react";
 import { useUserToken } from "@/app/hooks/useUserToken";
+import ErrorScreen from "@/components/errorScreen";
+import LoadingScreen from "@/components/loadingScreen";
 
 export default function page({ params }: { params: { projectId: string } }) {
   const jwtToken = useUserToken();
-  useEffect(() => {
-    console.log(!!jwtToken);
-  }, [jwtToken]);
 
   const {
     isPending,
@@ -35,8 +34,8 @@ export default function page({ params }: { params: { projectId: string } }) {
       setData(getQueriesData?.data || []);
     }
   }, [isSuccess, getQueriesData?.data]);
-  if (isPending) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isPending) return <LoadingScreen />;
+  if (error) return <ErrorScreen error={error} />;
   return (
     <>
       <div className="heading mb-4 flex items-center justify-between">

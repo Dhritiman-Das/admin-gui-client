@@ -1,3 +1,4 @@
+import { UserProfile } from "@/app/home/profile/editProfileDialog";
 import axios from "axios";
 
 const axiosInstance = axios.create({
@@ -35,16 +36,18 @@ export const getUserInfo = async (token: string) => {
   return response;
 };
 
-export const updateUser = async (
-  id: string,
-  user: {
-    name?: string;
-    email?: string;
-    profilePic?: string;
-    verified?: boolean;
-  }
-) => {
-  const response = await axiosInstance.put(`/users/${id}`, user);
+export const updateUser = async ({
+  token,
+  user,
+}: {
+  token: string;
+  user: UserProfile;
+}) => {
+  const response = await axiosInstance.patch(`/users`, user, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return response;
 };
 

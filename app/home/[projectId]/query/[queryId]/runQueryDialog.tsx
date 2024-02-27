@@ -1,7 +1,9 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -14,8 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
-import { Play } from "lucide-react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { executeQuery, getQuery } from "@/routes/project-routes";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import { useEffect, useState } from "react";
@@ -26,7 +27,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -35,6 +35,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import BadgedQueries from "@/components/ui/badged-queries";
+import { useMutation } from "@/app/hooks/customMutation";
+import ReactJson from "react-json-view";
 
 export function RunQueryDialog({
   projectId,
@@ -47,6 +49,7 @@ export function RunQueryDialog({
 }) {
   const queryClient = useQueryClient();
   const jwtToken = useUserToken();
+  const [openJsonViewer, setOpenJsonViewer] = useState(false);
   const {
     isPending,
     error,
@@ -68,6 +71,7 @@ export function RunQueryDialog({
       queryClient.invalidateQueries({
         queryKey: [`${projectId}/history`],
       });
+      setOpenJsonViewer(true);
       toast.success("Query executed successfully");
     },
   });
@@ -100,6 +104,7 @@ export function RunQueryDialog({
       executeQueryDto: data,
     });
   }
+
   return (
     <Dialog>
       <TooltipProvider>
@@ -110,52 +115,87 @@ export function RunQueryDialog({
           <TooltipContent>Run</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Run query</DialogTitle>
-          <div className="mt-2">
-            {isPending ? (
-              <Skeleton className="h-4 w-20" />
-            ) : (
-              <BadgedQueries inputString={queryData?.data.queryString} />
-            )}
+      {!!!openJsonViewer && (
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Run query</DialogTitle>
+            <div className="mt-2">
+              {isPending ? (
+                <Skeleton className="h-4 w-20" />
+              ) : (
+                <BadgedQueries inputString={queryData?.data.queryString} />
+              )}
+            </div>
+          </DialogHeader>
+          {isPending ? (
+            "Loading..."
+          ) : (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-2"
+              >
+                {queryState.map((field, index) => (
+                  <FormField
+                    key={index}
+                    control={form.control}
+                    name={field.variable}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{field.name}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={`Enter ${field.name}`}
+                            {...field}
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    loading={executeQueryMutation.isPending}
+                  >
+                    Run
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          )}
+        </DialogContent>
+      )}
+      {openJsonViewer && (
+        <DialogContent className="">
+          <DialogHeader>
+            <DialogTitle>Edit profile</DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <ReactJson src={executeQueryMutation?.data?.data} />
           </div>
-        </DialogHeader>
-        {isPending ? (
-          "Loading..."
-        ) : (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-              {queryState.map((field, index) => (
-                <FormField
-                  key={index}
-                  control={form.control}
-                  name={field.variable}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{field.name}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={`Enter ${field.name}`}
-                          {...field}
-                          value={field.value || ""}
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
-              <DialogFooter>
-                <Button type="submit" loading={executeQueryMutation.isPending}>
-                  Run
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        )}
-      </DialogContent>
+          <DialogFooter>
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                setOpenJsonViewer(false);
+              }}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={form.handleSubmit(onSubmit)}
+              loading={executeQueryMutation.isPending}
+            >
+              Run again
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      )}
     </Dialog>
   );
 }

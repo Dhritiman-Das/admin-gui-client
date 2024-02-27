@@ -7,9 +7,16 @@ import { QueryMongoModule } from 'src/mongo/query-mongo/query-mongo.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UserMongoModule } from 'src/mongo/user-mongo/user-mongo.module';
+import { CaslModule } from 'src/casl/casl.module';
 
 @Module({
-  imports: [ProjectMongoModule, QueryModule, QueryMongoModule, UserMongoModule],
+  imports: [
+    ProjectMongoModule,
+    QueryModule,
+    QueryMongoModule,
+    UserMongoModule,
+    CaslModule,
+  ],
   controllers: [ProjectsController],
   providers: [
     ProjectsService,

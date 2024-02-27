@@ -16,6 +16,12 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { QueryService } from 'src/query/query.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateQueryDto } from 'src/query/dto/create-query.dto';
+import { AddMembersDto } from './dto/add-members.dto';
+import { Action, CaslAbilityFactory } from 'src/casl/casl-ability.factory';
+import { CheckAbility } from 'src/casl/abilities.decorator';
+import { Project } from 'src/mongo/project-mongo/project-mongo.schema';
+import { Query } from 'src/mongo/query-mongo/query-mongo.schema';
+import { Member } from './entities/project.entity';
 
 @UseGuards(AuthGuard)
 @Controller('projects')
@@ -23,38 +29,51 @@ export class ProjectsController {
   constructor(
     private readonly projectsService: ProjectsService,
     private readonly queryService: QueryService,
+    private abilityFactory: CaslAbilityFactory,
   ) {}
 
   @Post()
   create(@Body() createProjectDto: CreateProjectDto, @Req() req) {
-    console.log({ user: req.user });
     const userEmail = req.user as string;
     return this.projectsService.create(createProjectDto);
   }
 
-  @Get()
-  findAll(@Req() req) {
-    console.log({ user: req.user });
-
-    return this.projectsService.findAll();
-  }
-
+  @CheckAbility({
+    action: Action.Read,
+    subject: Project,
+  })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.projectsService.findOne({ query: { _id: id } });
   }
 
+  @CheckAbility({
+    action: Action.Update,
+    subject: Project,
+  })
+  @CheckAbility({
+    action: Action.Update,
+    subject: Project,
+  })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectsService.update(id, updateProjectDto);
   }
 
+  @CheckAbility({
+    action: Action.Update,
+    subject: Project,
+  })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.projectsService.remove(+id);
   }
 
   //query
+  @CheckAbility({
+    action: Action.Create,
+    subject: Query,
+  })
   @Post(':projectId/query')
   createQuery(
     @Param('projectId') projectId: string,
@@ -62,11 +81,14 @@ export class ProjectsController {
     @Req() req: any,
   ) {
     const userId = req.user.userId as string;
-    console.log({ userId });
 
     return this.queryService.create(createQueryDto, userId, projectId);
   }
 
+  @CheckAbility({
+    action: Action.Update,
+    subject: Query,
+  })
   @Patch(':projectId/query/:queryId')
   updateQuery(
     @Param('projectId') projectId: string,
@@ -76,6 +98,10 @@ export class ProjectsController {
     return this.queryService.update(queryId, updateQueryDto);
   }
 
+  @CheckAbility({
+    action: Action.Read,
+    subject: Project,
+  })
   @Post('/:projectId/query/:queryId/execute')
   executeQuery(
     @Body() executeQueryDto: any,
@@ -92,11 +118,19 @@ export class ProjectsController {
     });
   }
 
+  @CheckAbility({
+    action: Action.Read,
+    subject: Query,
+  })
   @Get('/:projectId/query')
   listQueries(@Param('projectId') projectId: string) {
     return this.projectsService.listQueries({ projectId });
   }
 
+  @CheckAbility({
+    action: Action.Read,
+    subject: Query,
+  })
   @Get('/:projectId/query/:queryId')
   getQuery(
     @Param('projectId') projectId: string,
@@ -105,6 +139,10 @@ export class ProjectsController {
     return this.projectsService.listQuery({ projectId, queryId });
   }
 
+  @CheckAbility({
+    action: Action.Update,
+    subject: Query,
+  })
   @Delete('/:projectId/query/:queryId')
   deleteQuery(
     @Param('projectId') projectId: string,
@@ -113,8 +151,64 @@ export class ProjectsController {
     return this.projectsService.deleteQuery({ projectId, queryId });
   }
 
+  @CheckAbility({
+    action: Action.Create,
+    subject: Query,
+  })
   @Get('/:projectId/db-details')
   listDbDetails(@Param('projectId') projectId: string) {
     return this.projectsService.listDbDetails(projectId);
+  }
+  //members
+  @CheckAbility({
+    action: Action.Read,
+    subject: Member,
+  })
+  @Get('/:projectId/members')
+  listMembers(@Param('projectId') projectId: string) {
+    return this.projectsService.listMembers(projectId);
+  }
+
+  @CheckAbility({
+    action: Action.Update,
+    subject: Member,
+  })
+  @Post('/:projectId/members')
+  addMembers(
+    @Param('projectId') projectId: string,
+    @Body() addMembersDto: AddMembersDto,
+    @Req() req: any,
+  ) {
+    const userId = req.user.userId as string;
+    return this.projectsService.addMembers({ projectId, addMembersDto });
+  }
+
+  @CheckAbility({
+    action: Action.Update,
+    subject: Member,
+  })
+  @Patch('/:projectId/members/:userId')
+  updateMember(
+    @Param('projectId') projectId: string,
+    @Param('userId') userId: string,
+    @Body() updateMemberDto: any,
+  ) {
+    return this.projectsService.updateMember({
+      projectId,
+      userId,
+      updateMemberDto,
+    });
+  }
+
+  @CheckAbility({
+    action: Action.Update,
+    subject: Member,
+  })
+  @Delete('/:projectId/members/:userId')
+  removeMember(
+    @Param('projectId') projectId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.projectsService.removeMember({ projectId, userId });
   }
 }

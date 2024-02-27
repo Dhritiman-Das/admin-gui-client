@@ -36,13 +36,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createQuery, getDbDetails, getQuery } from "@/routes/project-routes";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import { AddQueryFormSchema } from "./addQueryDialog";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@/app/hooks/customMutation";
 
 export default function DuplicateQueryDialog({
   queryId,

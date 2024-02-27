@@ -29,9 +29,18 @@ export default function HomeContent() {
   useEffect(() => {
     if (response?.data) {
       if (response.data.projects.length === 1) {
-        localStorage.setItem("projectId", response.data.projects[0]._id);
-        router.replace(`/home/${response.data.projects[0]._id}`);
+        localStorage.setItem(
+          "projectId",
+          response.data.projects[0].project._id
+        );
+        router.replace(`/home/${response.data.projects[0].project._id}`);
       } else if (response.data.projects.length > 1) {
+        console.log("Have more than 1 project", response.data.projects);
+        localStorage.setItem(
+          "projectId",
+          response.data.projects[0].project._id
+        );
+        router.replace(`/home/${response.data.projects[0].project._id}`);
         // Show the list of projects
         // You need to handle this part according to your application's logic
       }

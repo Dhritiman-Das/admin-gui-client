@@ -1,4 +1,5 @@
 "use client";
+
 import { MySession } from "@/app/api/auth/[...nextauth]/route";
 import ErrorScreen from "@/components/errorScreen";
 import LoadingScreen from "@/components/loadingScreen";
@@ -6,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import BadgedQueries from "@/components/ui/badged-queries";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getQueries, getQuery } from "@/routes/project-routes";
+import { getQuery } from "@/routes/project-routes";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";

@@ -7,6 +7,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { UserMongoModule } from 'src/mongo/user-mongo/user-mongo.module';
 import { ProjectMongoModule } from 'src/mongo/project-mongo/project-mongo.module';
 import { HistoryModule } from 'src/history/history.module';
+import { CaslModule } from 'src/casl/casl.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { HistoryModule } from 'src/history/history.module';
     UserMongoModule,
     ProjectMongoModule,
     HistoryModule,
+    CaslModule,
   ],
   controllers: [QueryController],
   providers: [

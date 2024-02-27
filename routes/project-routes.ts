@@ -13,6 +13,21 @@ export const getProjectInfo = async (projectId: string, token: string) => {
   return response;
 };
 
+export const getDbDetails = async ({
+  projectId,
+  token,
+}: {
+  projectId: string;
+  token: string;
+}) => {
+  const response = await axiosInstance.get(`projects/${projectId}/db-details`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
+};
+
 export const updateProject = async ({
   projectId,
   project,
@@ -166,17 +181,81 @@ export const deleteQuery = async ({
   return response;
 };
 
-export const getDbDetails = async ({
+export const getMembers = async ({
   projectId,
   token,
 }: {
   projectId: string;
   token: string;
 }) => {
-  const response = await axiosInstance.get(`projects/${projectId}/db-details`, {
+  const response = await axiosInstance.get(`projects/${projectId}/members`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+  return response;
+};
+
+export const addMembers = async ({
+  projectId,
+  addMembersDto,
+  token,
+}: {
+  projectId: string;
+  addMembersDto: any;
+  token: string;
+}) => {
+  const response = await axiosInstance.post(
+    `projects/${projectId}/members`,
+    addMembersDto,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response;
+};
+
+export const updateMember = async ({
+  projectId,
+  userId,
+  user,
+  token,
+}: {
+  projectId: string;
+  userId: string;
+  user: any;
+  token: string;
+}) => {
+  const response = await axiosInstance.patch(
+    `projects/${projectId}/members/${userId}`,
+    user,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response;
+};
+
+export const removeMember = async ({
+  projectId,
+  userId,
+  token,
+}: {
+  projectId: string;
+  userId: string;
+  token: string;
+}) => {
+  const response = await axiosInstance.delete(
+    `projects/${projectId}/members/${userId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response;
 };

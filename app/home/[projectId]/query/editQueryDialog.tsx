@@ -38,7 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createQuery,
   editQuery,
@@ -49,6 +49,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import { AddQueryFormSchema } from "./addQueryDialog";
+import { useMutation } from "@/app/hooks/customMutation";
 
 export default function EditQueryDialog({
   queryId,
@@ -91,7 +92,7 @@ export default function EditQueryDialog({
     queryKey: [`${currentProjectId}/project/db-details`],
     queryFn: () =>
       getDbDetails({ projectId: currentProjectId, token: jwtToken as string }),
-    enabled: !!jwtToken && !!currentProjectId,
+    enabled: !!jwtToken && !!currentProjectId && !!dialogOpen,
   });
   const {
     isPending,

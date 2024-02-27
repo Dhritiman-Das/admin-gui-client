@@ -19,14 +19,23 @@ export class UsersService {
       dbConnectionString: '',
       admin: user,
       mode: 'personal',
-      members: [user],
       deleted: false,
     });
     const userUpdated = await this.userMongoService.findOneAndUpdate({
       query: { _id: user._id },
       update: {
         $push: {
-          projects: project,
+          projects: {
+            project,
+            role: 'admin',
+            isAdvancedSettings: false,
+            advancedSettings: {
+              query: 'admin',
+              mutate: 'admin',
+              members: 'admin',
+              projects: 'admin',
+            },
+          },
         },
       },
       options: { new: true },
@@ -43,16 +52,27 @@ export class UsersService {
     query,
     projection,
     options,
+    populate,
   }: {
     query: any;
     projection?: any;
     options?: any;
+    populate?: any;
   }) {
-    return await this.userMongoService.findOne({ query, options, projection });
+    return await this.userMongoService.findOne({
+      query,
+      options,
+      projection,
+      populate,
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  update(userId: string, updateUserDto: UpdateUserDto) {
+    return this.userMongoService.findOneAndUpdate({
+      query: { _id: userId },
+      update: updateUserDto,
+      options: { new: true },
+    });
   }
 
   remove(id: number) {

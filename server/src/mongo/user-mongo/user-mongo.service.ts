@@ -17,8 +17,6 @@ export class UserMongoService {
       const createdUser = new this.userModel(user);
       return await createdUser.save();
     } catch (error) {
-      console.log({ error });
-
       if (error.code === 11000) {
         throw new ConflictException('User with this email already exists');
       } else {
@@ -48,26 +46,51 @@ export class UserMongoService {
     query,
     projection,
     options,
+    populate,
   }: {
     query: any;
     projection?: any;
     options?: any;
+    populate?: any;
   }) {
-    const user = await this.userModel
+    return await this.userModel
       .findOne(query, projection, { ...options, lean: true })
       .populate({
         path: 'projects',
         select: 'name mode dbConnectionString',
       })
+      .populate(populate)
       .exec();
-    if (
-      user.projects.some(
-        (project: Project) =>
-          project.mode === 'personal' && !!!project.dbConnectionString,
-      )
-    ) {
-      return { ...user, personalProjectSetup: false };
-    }
-    return { ...user, personalProjectSetup: true };
+  }
+
+  async findAll({
+    query,
+    projection,
+    options,
+    populate,
+  }: {
+    query?: any;
+    projection?: any;
+    options?: any;
+    populate?: any;
+  }) {
+    return await this.userModel
+      .find(query, projection, options)
+      .populate(populate)
+      .exec();
+  }
+
+  async findOneNormal({
+    query,
+    projection,
+    options,
+  }: {
+    query: any;
+    projection?: any;
+    options?: any;
+  }) {
+    return await this.userModel
+      .findOne(query, projection, { ...options, lean: true })
+      .lean();
   }
 }

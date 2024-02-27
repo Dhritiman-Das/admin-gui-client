@@ -14,6 +14,7 @@ import React, { useEffect } from "react";
 import TeamSwitcher from "./teamSwitcher";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { PlanDialog } from "./planDialog";
 
 type SingleNavigation = {
   name: string;
@@ -107,6 +108,7 @@ export default function Sidebar() {
           </Link>
         ))}
         <div className="mt-auto flex flex-col">
+          <PlanDialog />
           {navigation.bottom.map((item, index) => (
             <Link
               key={item.name + index}

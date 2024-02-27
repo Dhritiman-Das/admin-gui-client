@@ -22,11 +22,12 @@ import {
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { deleteQuery } from "@/routes/project-routes";
 import { toast } from "sonner";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@/app/hooks/customMutation";
 
 export const DeleteQueryFormSchema = z.object({
   confirmText: z.string().refine((value) => value === "delete", {

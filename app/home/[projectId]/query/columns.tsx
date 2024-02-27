@@ -37,11 +37,10 @@ export const columns: ColumnDef<Query>[] = [
       <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => {
+      const name = (row.getValue("name") as Query["name"]) ?? "No Name";
       return (
         <div className="flex space-x-2">
-          <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("name")}
-          </span>
+          <span className="max-w-[500px] truncate font-medium">{name}</span>
         </div>
       );
     },
@@ -58,7 +57,8 @@ export const columns: ColumnDef<Query>[] = [
     accessorKey: "queryString",
     header: "Query variables",
     cell: ({ row }) => {
-      const variables = extractVariables(row.getValue("queryString"));
+      const queryString = row.getValue("queryString") ?? "";
+      const variables = extractVariables(queryString);
       const displayVariables = variables.slice(0, 2);
       const remainingVariables =
         variables.length > 2 ? variables.length - 2 : 0;
@@ -89,15 +89,18 @@ export const columns: ColumnDef<Query>[] = [
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href={`/users/${author._id}`}>
+                <Link href={`/users/${author?._id ?? ""}`}>
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={author.profilePic} alt={author.name} />
+                    <AvatarImage
+                      src={author?.profilePic ?? ""}
+                      alt={author?.name ?? "No Name"}
+                    />
                     <AvatarFallback>DD</AvatarFallback>
                   </Avatar>
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{author.name}</p>
+                <p>{author?.name ?? "No Name"}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

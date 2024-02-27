@@ -6,6 +6,8 @@ import { useUserToken } from "@/app/hooks/useUserToken";
 import { getHistory } from "@/routes/history-routes";
 import { History, columns } from "./columns";
 import { DataTable } from "./data-table";
+import LoadingScreen from "@/components/loadingScreen";
+import ErrorScreen from "@/components/errorScreen";
 
 export default function page({ params }: { params: { projectId: string } }) {
   const jwtToken = useUserToken();
@@ -15,7 +17,7 @@ export default function page({ params }: { params: { projectId: string } }) {
     isSuccess,
     data: getHistoryData,
   } = useQuery({
-    queryKey: [`${params.projectId}/query`],
+    queryKey: [`${params.projectId}/history`],
     queryFn: () =>
       getHistory({ projectId: params.projectId, token: jwtToken as string }),
     enabled: !!jwtToken && !!params.projectId,
@@ -26,8 +28,8 @@ export default function page({ params }: { params: { projectId: string } }) {
       setData(getHistoryData?.data || []);
     }
   }, [isSuccess, getHistoryData?.data]);
-  if (isPending) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (isPending) return <LoadingScreen />;
+  if (error) return <ErrorScreen error={error} />;
   return (
     <>
       <div className="heading mb-4 flex items-center justify-between">

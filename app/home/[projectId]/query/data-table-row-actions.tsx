@@ -30,7 +30,7 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const router = useRouter();
   const [currentProjectId, setCurrentProjectId] = React.useState("");
-  const task = querySchema.parse(row.original);
+  const query = querySchema.parse(row.original);
   useEffect(() => {
     setCurrentProjectId(localStorage.getItem("projectId") || "");
   }, []);
@@ -50,28 +50,32 @@ export function DataTableRowActions<TData>({
         <DropdownMenuContent align="end" className="w-[160px]">
           <RunQueryDialog
             projectId={currentProjectId}
-            queryId={task._id}
+            queryId={query._id}
             activateBtn={<div className={dropDownItemClass}>Run</div>}
           />
-          <Link href={`/home/${currentProjectId}/query/${task._id}/view`}>
+          <Link href={`/home/${currentProjectId}/query/${query._id}/view`}>
             <DropdownMenuItem>View</DropdownMenuItem>
           </Link>
           <EditQueryDialog
             projectId={currentProjectId}
-            queryId={task._id}
+            queryId={query._id}
             activateBtn={<div className={dropDownItemClass}>Edit</div>}
           />
           <DuplicateQueryDialog
             projectId={currentProjectId}
-            queryId={task._id}
+            queryId={query._id}
             activateBtn={<div className={dropDownItemClass}>Duplicate</div>}
           />
           <DropdownMenuItem>Favorite</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DeleteQueryDialog
             projectId={currentProjectId}
-            queryId={task._id}
-            activateBtn={<div className={dropDownItemClass}>Delete</div>}
+            queryId={query._id}
+            activateBtn={
+              <div className={`${dropDownItemClass} text-destructive`}>
+                Delete
+              </div>
+            }
           />
         </DropdownMenuContent>
       </DropdownMenu>

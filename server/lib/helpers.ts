@@ -23,3 +23,15 @@ export function extractVariables(query) {
 
   return variables;
 }
+
+export function capitalizeFirstChar(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function getLocalTime(timezone: string) {
+  if (!!!timezone) return '';
+  return (
+    new Date().toLocaleTimeString('en-US', { timeZone: timezone }) +
+    ' local time'
+  );
+}

@@ -23,12 +23,6 @@ export class Project {
   admin: User;
 
   @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    default: [],
-  })
-  members: User[];
-
-  @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: DbQuery.name }],
     default: [],
   })

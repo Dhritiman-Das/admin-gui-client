@@ -8,7 +8,6 @@ import BadgedQueries from "@/components/ui/badged-queries";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getHistoryById } from "@/routes/history-routes";
-import { getQueries, getQuery } from "@/routes/project-routes";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Link from "next/link";

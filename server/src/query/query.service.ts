@@ -24,12 +24,10 @@ export class QueryService {
     const user = await this.userMongoService.findOne({
       query: { _id: userId },
     });
-    console.log({ user });
 
     const project = await this.projectMongoService.findOne({
       query: { _id: projectId },
     });
-    console.log({ project });
 
     return await this.queryMongoService.create({
       ...createQueryDto,
@@ -117,17 +115,13 @@ export class QueryService {
       await client.connect();
       const db = client.db(dbName);
       const collection = db.collection(dbCollectionName);
-      console.log({ dbName, dbCollectionName, collection });
 
       // const queryStringDummy = `{ "plan": var(plan_val), "startDate": {"$gte": var(startDate_val)} }`;
       // const executeQueryDtoDummy = {
       //   plan_val: 'trial',
       //   startDate_val: '1706265858',
       // };
-
-      console.log({ query });
       const result = await collection.find(query).toArray();
-      console.log({ result });
       await this.historyService.create({
         project: await this.projectMongoService.findOne({
           query: { _id: projectId },

@@ -45,14 +45,12 @@ export const columns: ColumnDef<History>[] = [
         setCurrentProjectId(localStorage.getItem("projectId") || "");
       }, []);
       const query = row.getValue("query") as History["query"];
-      console.log({ query });
 
       return (
         <div className="flex space-x-2">
           <span className="max-w-[400px] truncate font-medium">
-            <Link href={`/home/${currentProjectId}/query/${query._id}`}>
-              {query.name}
-              {query.name}
+            <Link href={`/home/${currentProjectId}/query/${query?._id ?? ""}`}>
+              {query?.name ?? "No Name"}
             </Link>
           </span>
         </div>
@@ -67,7 +65,7 @@ export const columns: ColumnDef<History>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {query.dbName}
+            {query?.dbName ?? "No Database"}
           </span>
         </div>
       );
@@ -81,7 +79,7 @@ export const columns: ColumnDef<History>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {query.dbCollectionName}
+            {query?.dbCollectionName ?? "No Collection"}
           </span>
         </div>
       );
@@ -91,9 +89,13 @@ export const columns: ColumnDef<History>[] = [
     accessorKey: "queryValues",
     header: "Query values",
     cell: ({ row }) => {
-      const queryValues = row.getValue("queryValues");
+      const queryValues = row.getValue("queryValues") ?? {};
       return (
-        <div className="flex space-x-2">{JSON.stringify(queryValues)}</div>
+        <div className="flex space-x-2">
+          <span className="max-w-[200px] truncate font-medium">
+            {JSON.stringify(queryValues)}
+          </span>
+        </div>
       );
     },
   },
@@ -123,15 +125,18 @@ export const columns: ColumnDef<History>[] = [
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href={`/users/${user._id}`}>
+                <Link href={`/users/${user?._id ?? ""}`}>
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.profilePic} alt={user.name} />
+                    <AvatarImage
+                      src={user?.profilePic ?? ""}
+                      alt={user?.name ?? "No Name"}
+                    />
                     <AvatarFallback>DD</AvatarFallback>
                   </Avatar>
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{user.name}</p>
+                <p>{user?.name ?? "No Name"}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
