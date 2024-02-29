@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Project } from './project-mongo.schema';
+import { Project, ProjectDocument } from './project-mongo.schema';
 
 @Injectable()
 export class ProjectMongoService {
@@ -17,16 +17,14 @@ export class ProjectMongoService {
   async findOne({
     query,
     projection,
-    options,
     populate,
   }: {
     query: any;
     projection?: any;
-    options?: any;
     populate?: any;
-  }) {
+  }): Promise<ProjectDocument> {
     return await this.projectModel
-      .findOne(query, projection, options)
+      .findOne(query, projection)
       .populate(populate)
       .exec();
   }

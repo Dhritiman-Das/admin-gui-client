@@ -45,11 +45,7 @@ const resourceMap = {
 
 @Injectable()
 export class CaslAbilityFactory {
-  createForUser(
-    user: User & { _id: Types.ObjectId },
-    projectId: Types.ObjectId,
-    isOwner: boolean,
-  ) {
+  createForUser(user: User, projectId: Types.ObjectId, isOwner: boolean) {
     const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
     let hasMatchingProject = false;
 
@@ -60,20 +56,20 @@ export class CaslAbilityFactory {
     user?.projects.forEach((permission) => {
       if (permission.project.toString() === projectId.toString()) {
         hasMatchingProject = true;
-        Object.entries(permission.advancedSettings).forEach(
-          ([resource, access]) => {
-            permissionMap[access].forEach((action) => {
-              const resourceObj = resourceMap[resource] || null;
-              can(action, resourceObj);
-              console.log({
-                status: 'can',
-                action,
-                resource,
-                resourceObj,
-              });
+        const advSettings = permission.advancedSettings.toObject();
+
+        Object.entries(advSettings).forEach(([resource, access]) => {
+          permissionMap[access]?.forEach((action) => {
+            const resourceObj = resourceMap[resource] || null;
+            can(action, resourceObj);
+            console.log({
+              status: 'can',
+              action,
+              resource,
+              resourceObj,
             });
-          },
-        );
+          });
+        });
       }
     });
 

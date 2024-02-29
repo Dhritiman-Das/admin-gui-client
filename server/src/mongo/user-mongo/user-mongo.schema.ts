@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, ObjectId } from 'mongoose';
 import { Project } from '../project-mongo/project-mongo.schema';
 
 export type UserDocument = HydratedDocument<User>;
@@ -45,6 +45,9 @@ export class AdvancedSettings {
   projects: PermissionsType;
 }
 
+export const AdvancedSettingsSchema =
+  SchemaFactory.createForClass(AdvancedSettings);
+
 @Schema({ _id: false })
 export class ProjectPermissions {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Project' })
@@ -57,7 +60,7 @@ export class ProjectPermissions {
   isAdvancedSettings: boolean;
 
   @Prop({ type: AdvancedSettings, default: () => ({}) })
-  advancedSettings: AdvancedSettings;
+  advancedSettings: HydratedDocument<AdvancedSettings>;
 }
 
 @Schema({ timestamps: true })

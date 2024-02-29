@@ -36,7 +36,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import BadgedQueries from "@/components/ui/badged-queries";
 import { useMutation } from "@/app/hooks/customMutation";
-import ReactJson from "react-json-view";
+import { JSONTree } from "react-json-tree";
 
 export function RunQueryDialog({
   projectId,
@@ -170,13 +170,21 @@ export function RunQueryDialog({
         </DialogContent>
       )}
       {openJsonViewer && (
-        <DialogContent className="">
+        <DialogContent
+          className={"lg:max-w-screen-lg overflow-y-scroll max-h-screen"}
+        >
           <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
+            <DialogTitle>Run query</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <ReactJson src={executeQueryMutation?.data?.data} />
+            <JSONTree
+              data={executeQueryMutation?.data?.data}
+              theme={"harmonic"}
+              shouldExpandNodeInitially={(keyName, data, level) => true}
+              invertTheme={false}
+              labelRenderer={([key]) => <strong>{key}</strong>}
+            />
           </div>
           <DialogFooter>
             <Button

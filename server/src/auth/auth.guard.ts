@@ -50,7 +50,7 @@ export class AuthGuard implements CanActivate {
         secret: process.env.JWT_SECRET_KEY,
       });
       const userId = payload.userId;
-      const user = await this.userMongoService.findOneNormal({
+      const user = await this.userMongoService.findOne({
         query: { _id: userId },
       });
       request['user'] = { ...user, userId: user?._id };

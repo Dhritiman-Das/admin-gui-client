@@ -13,6 +13,7 @@ import { QueryMongoService } from 'src/mongo/query-mongo/query-mongo.service';
 import { UserMongoService } from 'src/mongo/user-mongo/user-mongo.service';
 import { AddMembersDto } from './dto/add-members.dto';
 import { User } from 'src/mongo/user-mongo/user-mongo.schema';
+import { decryptData, encryptData } from 'lib/helpers';
 
 @Injectable()
 export class ProjectsService {
@@ -29,6 +30,9 @@ export class ProjectsService {
 
     return await this.projectMongoService.create({
       ...createProjectDto,
+      dbConnectionString: await encryptData(
+        createProjectDto.dbConnectionString,
+      ),
     });
   }
 
@@ -45,17 +49,27 @@ export class ProjectsService {
     projection?: any;
     options?: any;
   }) {
-    return await this.projectMongoService.findOne({
+    const project = await this.projectMongoService.findOne({
       query,
       projection,
-      options,
     });
+    const projectObj = project.toObject();
+
+    return {
+      ...projectObj,
+      dbConnectionString: await decryptData(projectObj.dbConnectionString),
+    };
   }
 
   async update(id: string, updateProjectDto: UpdateProjectDto) {
     return await this.projectMongoService.findOneAndUpdate({
       query: { _id: id },
-      update: updateProjectDto,
+      update: {
+        ...updateProjectDto,
+        dbConnectionString: await encryptData(
+          updateProjectDto.dbConnectionString,
+        ),
+      },
     });
   }
 
@@ -86,7 +100,7 @@ export class ProjectsService {
       query: query,
       populate: {
         path: 'author',
-        select: 'name profilePic',
+        select: 'name profilePic email createdAt timeZone verified title',
       },
     });
   }
@@ -137,7 +151,7 @@ export class ProjectsService {
       projection: { dbConnectionString: 1 },
     });
 
-    const client = new MongoClient(dbConnectionString);
+    const client = new MongoClient(await decryptData(dbConnectionString));
     await client.connect();
 
     const databasesList = await client.db().admin().listDatabases();
@@ -169,20 +183,29 @@ export class ProjectsService {
       query: { _id: projectId },
       projection: { dbCollectionName: 1, dbConnectionString: 1 },
     });
-    const { dbCollectionName, dbName, queryString } =
-      await this.queryMongoService.findOne({
-        query: { _id: queryId },
-        projection: { dbCollectionName: 1, dbName: 1, queryString: 1 },
-      });
+    const {
+      dbCollectionName,
+      dbName,
+      queryString,
+      collation,
+      projection,
+      sort,
+    } = await this.queryMongoService.findOne({
+      query: { _id: queryId },
+      // projection: { dbCollectionName: 1, dbName: 1, queryString: 1 },
+    });
     return await this.queryService.executeQuery({
       projectId,
-      dbConnectionString,
+      dbConnectionString: await decryptData(dbConnectionString),
       dbName,
       dbCollectionName,
       queryId,
       queryString,
       executeQueryDto,
       userId,
+      collation,
+      projection,
+      sort,
     });
   }
 

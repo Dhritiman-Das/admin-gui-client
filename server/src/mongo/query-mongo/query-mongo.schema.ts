@@ -1,11 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { Document, HydratedDocument, ObjectId } from 'mongoose';
 import { Project } from '../project-mongo/project-mongo.schema';
 import { User } from '../user-mongo/user-mongo.schema';
 
 export type QueryDocument = HydratedDocument<Query>;
 
 @Schema({
+  _id: true,
   timestamps: true,
 })
 export class Query {
@@ -29,6 +30,15 @@ export class Query {
 
   @Prop({ required: true })
   queryString: string;
+
+  @Prop({ default: {}, type: {} })
+  projection?: Document;
+
+  @Prop({ default: {}, type: {} })
+  sort?: Document;
+
+  @Prop({ default: {}, type: {} })
+  collation?: Document;
 }
 
 export const QuerySchema = SchemaFactory.createForClass(Query);

@@ -15,6 +15,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from 'src/decorators/public.decorator';
 import { Project } from 'src/mongo/project-mongo/project-mongo.schema';
+import { decryptData } from 'lib/helpers';
 
 @Controller('users')
 export class UsersController {
@@ -41,19 +42,31 @@ export class UsersController {
   }
 
   @Get('me')
-  getMe(@Req() req: any) {
+  async getMe(@Req() req: any) {
     const userId = req.user.userId;
-    return this.usersService.findOne({
+    const user = await this.usersService.findOne({
       query: { _id: userId },
       populate: {
         path: 'projects',
         populate: {
           path: 'project',
-          select: 'name mode dbConnectionString ',
+          select: 'name mode dbConnectionString',
           model: 'Project',
         },
       },
     });
+    console.log(user.projects);
+
+    // Decrypt the dbConnectionString for each project
+    for (const userProject of user.projects) {
+      console.log({ userProject });
+
+      userProject.project.dbConnectionString = await decryptData(
+        userProject.project.dbConnectionString,
+      );
+    }
+
+    return user;
   }
 
   @Get()

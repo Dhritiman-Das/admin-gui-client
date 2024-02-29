@@ -37,6 +37,8 @@ export const updateProject = async ({
   project: any;
   token: string;
 }) => {
+  console.log({ project });
+
   const response = await axiosInstance.patch(`projects/${projectId}`, project, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -54,6 +56,9 @@ export const createQuery = async ({
   query: {
     name: string;
     queryString: string;
+    projection?: string;
+    sort?: string;
+    collation?: string;
     dbName: string;
     dbCollectionName: string;
     description?: string;
@@ -85,6 +90,9 @@ export const editQuery = async ({
     queryString: string;
     dbName: string;
     dbCollectionName: string;
+    projection?: string;
+    sort?: string;
+    collation?: string;
     description?: string;
   };
   token: string;

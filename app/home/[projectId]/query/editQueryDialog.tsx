@@ -27,7 +27,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { extractVariables } from "@/server/lib/helpers";
+import { extractVariables, safeJsonParse } from "@/server/lib/helpers";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -70,6 +70,9 @@ export default function EditQueryDialog({
     dbName: string;
     dbCollectionName: string;
     queryString: string;
+    projection: string;
+    sort: string;
+    collation: string;
   }>();
   const form = useForm<z.infer<typeof AddQueryFormSchema>>({
     resolver: zodResolver(AddQueryFormSchema),
@@ -79,6 +82,9 @@ export default function EditQueryDialog({
       dbName: "",
       dbCollectionName: "",
       queryString: "",
+      projection: "",
+      sort: "",
+      collation: "",
     },
   });
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -145,6 +151,15 @@ export default function EditQueryDialog({
     form.setValue("dbName", data?.dbName || "");
     form.setValue("dbCollectionName", data?.dbCollectionName || "");
     form.setValue("queryString", data?.queryString || "");
+    form.setValue(
+      "projection",
+      data?.projection ? JSON.stringify(data?.projection) : ""
+    );
+    form.setValue("sort", data?.sort ? JSON.stringify(data?.sort) : "");
+    form.setValue(
+      "collation",
+      data?.collation ? JSON.stringify(data?.collation) : ""
+    );
   }, [data]);
 
   function onSubmit(data: z.infer<typeof AddQueryFormSchema>) {
@@ -152,14 +167,21 @@ export default function EditQueryDialog({
     editQueryMutation.mutate({
       projectId: currentProjectId,
       queryId,
-      query: data,
+      query: {
+        ...data,
+        projection: safeJsonParse(data?.projection),
+        sort: safeJsonParse(data?.sort),
+        collation: safeJsonParse(data?.collation),
+      },
       token: jwtToken as string,
     });
   }
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>{activateBtn}</DialogTrigger>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent
+        className={"lg:max-w-screen-lg overflow-y-scroll max-h-screen"}
+      >
         <DialogHeader>
           <DialogTitle>Edit query</DialogTitle>
           <DialogDescription>
@@ -290,6 +312,60 @@ export default function EditQueryDialog({
                       </Badge>
                     ))}
                   </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="projection"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={`{ field: 0 }`}
+                      {...field}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="sort"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sort</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={`{ field: -1 } or [[field, -1]]`}
+                      {...field}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="collation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Collation</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={`{ locale: 'simple' }`}
+                      {...field}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

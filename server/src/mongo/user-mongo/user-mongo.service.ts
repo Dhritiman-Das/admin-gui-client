@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './user-mongo.schema';
+import { User, UserDocument } from './user-mongo.schema';
 import { Model } from 'mongoose';
 import { Project } from '../project-mongo/project-mongo.schema';
 
@@ -45,20 +45,14 @@ export class UserMongoService {
   async findOne({
     query,
     projection,
-    options,
     populate,
   }: {
     query: any;
     projection?: any;
-    options?: any;
     populate?: any;
-  }) {
+  }): Promise<UserDocument> {
     return await this.userModel
-      .findOne(query, projection, { ...options, lean: true })
-      .populate({
-        path: 'projects',
-        select: 'name mode dbConnectionString',
-      })
+      .findOne(query, projection)
       .populate(populate)
       .exec();
   }
