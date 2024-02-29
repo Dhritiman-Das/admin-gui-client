@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import SessionProvider from "@/components/SessionProvider";
 import ReactQueryProvider from "./home/reactQueryClientProvider";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,8 +24,15 @@ export default async function RootLayout({
     <ReactQueryProvider>
       <html lang="en">
         <body className={inter.className}>
-          <SessionProvider session={session}>{children}</SessionProvider>
-          <Toaster />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <SessionProvider session={session}>{children}</SessionProvider>
+            <Toaster />
+          </ThemeProvider>
         </body>
       </html>
     </ReactQueryProvider>

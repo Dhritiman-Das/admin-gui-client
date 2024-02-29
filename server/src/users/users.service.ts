@@ -51,17 +51,14 @@ export class UsersService {
   async findOne({
     query,
     projection,
-    options,
     populate,
   }: {
     query: any;
     projection?: any;
-    options?: any;
     populate?: any;
   }) {
     return await this.userMongoService.findOne({
       query,
-      options,
       projection,
       populate,
     });

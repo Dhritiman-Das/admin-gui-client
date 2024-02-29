@@ -25,10 +25,8 @@ export function SingleDetail({
   return (
     <>
       <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-        <dt className="text-sm font-medium leading-6 text-gray-900">
-          {header}
-        </dt>
-        <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+        <dt className="text-sm font-medium leading-6">{header}</dt>
+        <dd className="mt-1 text-sm leading-6 text-muted-foreground sm:col-span-2 sm:mt-0">
           {loading ? <Skeleton className="h-[20px] w-[150px]" /> : value}
         </dd>
       </div>
@@ -66,6 +64,9 @@ export default function page({
     description: string;
     dbName: string;
     dbCollectionName: string;
+    projection?: any;
+    sort?: any;
+    collation?: any;
     queryString: string;
     author: {
       name: string;
@@ -112,6 +113,21 @@ export default function page({
             "No query"
           )
         }
+        loading={isPending}
+      />
+      <SingleDetail
+        header="Projection"
+        value={JSON.stringify(data?.projection) || "No collection"}
+        loading={isPending}
+      />
+      <SingleDetail
+        header="Sort"
+        value={JSON.stringify(data?.sort) || "No collection"}
+        loading={isPending}
+      />
+      <SingleDetail
+        header="Collation"
+        value={JSON.stringify(data?.collation) || "No collection"}
         loading={isPending}
       />
       <SingleDetail

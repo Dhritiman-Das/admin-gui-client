@@ -7,6 +7,8 @@ import { generateQuery } from 'lib/helpers';
 import { UserMongoService } from 'src/mongo/user-mongo/user-mongo.service';
 import { ProjectMongoService } from 'src/mongo/project-mongo/project-mongo.service';
 import { HistoryService } from 'src/history/history.service';
+import { User } from 'src/mongo/user-mongo/user-mongo.schema';
+import { Document } from 'mongoose';
 
 @Injectable()
 export class QueryService {
@@ -21,7 +23,7 @@ export class QueryService {
     userId: string,
     projectId: string,
   ) {
-    const user = await this.userMongoService.findOne({
+    const user: User = await this.userMongoService.findOne({
       query: { _id: userId },
     });
 
@@ -69,18 +71,15 @@ export class QueryService {
   findOne({
     query,
     projection,
-    options,
     populate,
   }: {
     query: any;
     projection?: any;
-    options?: any;
     populate?: any;
   }) {
     return this.queryMongoService.findOne({
       query,
       projection,
-      options,
       populate,
     });
   }
@@ -98,6 +97,9 @@ export class QueryService {
     queryString: string;
     executeQueryDto: any;
     userId: string;
+    projection?: Document;
+    sort?: Document;
+    collation?: Document;
   }) {
     const {
       projectId,
@@ -108,6 +110,9 @@ export class QueryService {
       queryString,
       executeQueryDto,
       userId,
+      projection,
+      sort,
+      collation,
     } = items;
     const query = JSON.parse(generateQuery(queryString, executeQueryDto));
     const client = new MongoClient(dbConnectionString);
@@ -121,7 +126,9 @@ export class QueryService {
       //   plan_val: 'trial',
       //   startDate_val: '1706265858',
       // };
-      const result = await collection.find(query).toArray();
+      console.log({ projection });
+
+      const result = await collection.find(query).project(projection).toArray();
       await this.historyService.create({
         project: await this.projectMongoService.findOne({
           query: { _id: projectId },

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsObject } from 'class-validator';
 import { Project } from 'src/mongo/project-mongo/project-mongo.schema';
 import { User } from 'src/mongo/user-mongo/user-mongo.schema';
 
@@ -26,4 +26,16 @@ export class CreateQueryDto {
   @IsString()
   @IsNotEmpty()
   queryString: string;
+
+  @IsObject()
+  @IsOptional()
+  projection: any;
+
+  @IsObject()
+  @IsOptional()
+  sort: any;
+
+  @IsObject()
+  @IsOptional()
+  collation: any;
 }

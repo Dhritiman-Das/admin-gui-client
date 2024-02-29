@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Query } from './query-mongo.schema';
+import { Query, QueryDocument } from './query-mongo.schema';
 
 @Injectable()
 export class QueryMongoService {
@@ -48,16 +48,14 @@ export class QueryMongoService {
   async findOne({
     query,
     projection,
-    options,
     populate,
   }: {
     query: any;
     projection?: any;
-    options?: any;
     populate?: any;
-  }) {
+  }): Promise<QueryDocument> {
     const queryDoc = await this.queryModel
-      .findOne(query, projection, options)
+      .findOne(query, projection)
       .populate(populate);
 
     if (!!!queryDoc) {

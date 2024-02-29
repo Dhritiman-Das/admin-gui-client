@@ -27,7 +27,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { extractVariables } from "@/server/lib/helpers";
+import { extractVariables, safeJsonParse } from "@/server/lib/helpers";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -57,6 +57,9 @@ export const AddQueryFormSchema = z.object({
   queryString: z.string().min(2, {
     message: "Database name must be at least 2 characters.",
   }),
+  projection: z.string().optional(),
+  sort: z.string().optional(),
+  collation: z.string().optional(),
 });
 
 export default function AddQueryDialog({ projectId }: { projectId: string }) {
@@ -71,6 +74,9 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
       dbName: "",
       dbCollectionName: "",
       queryString: "",
+      projection: "",
+      sort: "",
+      collation: "",
     },
   });
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -112,7 +118,12 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
     console.log(data);
     createQueryMutation.mutate({
       projectId: currentProjectId,
-      query: data,
+      query: {
+        ...data,
+        projection: safeJsonParse(data?.projection),
+        sort: safeJsonParse(data?.sort),
+        collation: safeJsonParse(data?.collation),
+      },
       token: jwtToken as string,
     });
   }
@@ -121,7 +132,9 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
       <DialogTrigger asChild>
         <Button>Add query</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent
+        className={"lg:max-w-screen-lg overflow-y-scroll max-h-screen"}
+      >
         <DialogHeader>
           <DialogTitle>Add query</DialogTitle>
           <DialogDescription>
@@ -135,10 +148,11 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel aria-required>Name</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Query name"
+                      required
                       {...field}
                       value={field.value}
                       onChange={field.onChange}
@@ -254,6 +268,61 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="projection"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={`{ field: 0 }`}
+                      {...field}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="sort"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sort</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={`{ field: -1 } or [[field, -1]]`}
+                      {...field}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="collation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Collation</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={`{ locale: 'simple' }`}
+                      {...field}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="description"

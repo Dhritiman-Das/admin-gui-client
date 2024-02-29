@@ -101,7 +101,7 @@ export default function Sidebar() {
               item.current ? "bg-secondary" : ""
             } ${
               item.href === pathName.split("/")[2] ? "bg-secondary" : ""
-            } hover:bg-secondary text-primary`}
+            } hover:bg-secondary`}
           >
             <item.icon className="h-6 w-6" />
             <span className="ml-3 flex-1 whitespace-nowrap">{item.name}</span>
@@ -117,7 +117,7 @@ export default function Sidebar() {
                 item.current ? "bg-secondary" : ""
               } ${
                 item.href === pathName.split("/")[2] ? "bg-secondary" : ""
-              } hover:bg-secondary text-primary`}
+              } hover:bg-secondary`}
             >
               <item.icon className="h-6 w-6" />
               <span className="ml-3 flex-1 whitespace-nowrap">{item.name}</span>

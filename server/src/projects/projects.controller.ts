@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -43,14 +44,16 @@ export class ProjectsController {
     subject: Project,
   })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.projectsService.findOne({ query: { _id: id } });
+  async findOne(@Param('id') id: string) {
+    const project = await this.projectsService.findOne({ query: { _id: id } });
+    console.log({ project });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    return project;
   }
 
-  @CheckAbility({
-    action: Action.Update,
-    subject: Project,
-  })
   @CheckAbility({
     action: Action.Update,
     subject: Project,

@@ -57,8 +57,8 @@ export const columns: ColumnDef<Member>[] = [
             </Avatar>
           </div>
           <div className="ml-4">
-            <div className="font-medium text-gray-900">{name}</div>
-            <div className="mt-1 text-gray-500">{email}</div>
+            <div className="font-medium">{name}</div>
+            <div className="mt-1 text-muted-foreground">{email}</div>
           </div>
         </div>
       );
@@ -95,17 +95,17 @@ export const columns: ColumnDef<Member>[] = [
                         : permissionsValues[index] === "read-write"
                         ? "bg-blue-600 hover:bg-blue-500"
                         : "bg-green-600 hover:bg-green-500"
-                    }`}
+                    } text-gray-100`}
                   >
                     {capitalizeFirstChar(key)}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
                   <div className="rounded-lg ">
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium ">
                       {capitalizeFirstChar(key)}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                       {capitalizeFirstChar(permissionsValues[index])}
                     </div>
                   </div>

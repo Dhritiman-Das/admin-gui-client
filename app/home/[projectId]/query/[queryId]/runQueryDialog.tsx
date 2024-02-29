@@ -174,15 +174,15 @@ export function RunQueryDialog({
           className={"lg:max-w-screen-lg overflow-y-scroll max-h-screen"}
         >
           <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
+            <DialogTitle>Run query</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <JSONTree
               data={executeQueryMutation?.data?.data}
-              theme={"default"}
+              theme={"harmonic"}
               shouldExpandNodeInitially={(keyName, data, level) => true}
-              invertTheme
+              invertTheme={false}
               labelRenderer={([key]) => <strong>{key}</strong>}
             />
           </div>

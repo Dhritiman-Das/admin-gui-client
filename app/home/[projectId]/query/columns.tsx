@@ -14,6 +14,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
+import { ProfileHoverCard } from "@/components/essentials/profileHoverCard";
+import { useEffect, useState } from "react";
+
+export const profileSchema = z.object({
+  name: z.string(),
+  profilePic: z.string(),
+  email: z.string(),
+  createdAt: z.string(),
+  timeZone: z.string(),
+  verified: z.boolean(),
+  title: z.string(),
+  _id: z.string(),
+});
 
 export const querySchema = z.object({
   _id: z.string(),
@@ -24,9 +37,16 @@ export const querySchema = z.object({
   author: z.object({
     name: z.string(),
     profilePic: z.string(),
+    email: z.string(),
+    createdAt: z.string(),
+    timeZone: z.string(),
+    verified: z.boolean(),
+    title: z.string(),
     _id: z.string(),
   }),
 });
+
+export type Profile = z.infer<typeof profileSchema>;
 
 export type Query = z.infer<typeof querySchema>;
 
@@ -37,10 +57,20 @@ export const columns: ColumnDef<Query>[] = [
       <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => {
+      const queryId = row.original._id;
       const name = (row.getValue("name") as Query["name"]) ?? "No Name";
+      const [currentProjectId, setCurrentProjectId] = useState("");
+      useEffect(() => {
+        setCurrentProjectId(localStorage.getItem("projectId") || "");
+      }, []);
+      // const queryId
       return (
         <div className="flex space-x-2">
-          <span className="max-w-[500px] truncate font-medium">{name}</span>
+          <span className="max-w-[500px] truncate font-medium">
+            <Link href={`/home/${currentProjectId}/query/${queryId}/view`}>
+              {name}
+            </Link>
+          </span>
         </div>
       );
     },
@@ -84,28 +114,7 @@ export const columns: ColumnDef<Query>[] = [
     header: "Author",
     cell: ({ row }) => {
       const author = row.getValue("author") as Query["author"];
-      return (
-        <div className="flex gap-2 items-center">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link href={`/users/${author?._id ?? ""}`}>
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={author?.profilePic ?? ""}
-                      alt={author?.name ?? "No Name"}
-                    />
-                    <AvatarFallback>DD</AvatarFallback>
-                  </Avatar>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{author?.name ?? "No Name"}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      );
+      return <ProfileHoverCard profile={author} />;
     },
   },
   {
