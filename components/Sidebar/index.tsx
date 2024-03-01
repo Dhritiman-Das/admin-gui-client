@@ -7,6 +7,7 @@ import {
   User,
   Building2,
   Users,
+  Bell,
   LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -15,12 +16,14 @@ import TeamSwitcher from "./teamSwitcher";
 import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { PlanDialog } from "./planDialog";
+import { NotificationDropdown } from "../essentials/notification-dropdown/notificationDropdown";
 
 type SingleNavigation = {
   name: string;
-  href: string;
+  href?: string;
   icon: LucideIcon;
   current: boolean;
+  openComponent?: React.ReactElement;
 };
 
 type Navigation = {
@@ -61,6 +64,12 @@ export default function Sidebar() {
           icon: Users,
           current: pathName.includes("members"),
         },
+        {
+          name: "Notifications",
+          icon: Bell,
+          current: false,
+          openComponent: <NotificationDropdown />,
+        },
       ],
       bottom: [
         {
@@ -93,26 +102,30 @@ export default function Sidebar() {
       <div className="flex h-full flex-col overflow-y-auto border-r border-border bg-background px-3 py-4">
         <TeamSwitcher />
         <div className="my-1"></div>
-        {navigation.top.map((item, index) => (
-          <Link
-            key={item.name + index}
-            href={item.href}
-            className={`flex items-center rounded-lg px-3 py-2 ${
-              item.current ? "bg-secondary" : ""
-            } ${
-              item.href === pathName.split("/")[2] ? "bg-secondary" : ""
-            } hover:bg-secondary`}
-          >
-            <item.icon className="h-6 w-6" />
-            <span className="ml-3 flex-1 whitespace-nowrap">{item.name}</span>
-          </Link>
-        ))}
+        {navigation.top.map((item, index) =>
+          item?.href ? (
+            <Link
+              key={item.name + index}
+              href={item.href as string}
+              className={`flex items-center rounded-lg px-3 py-2 ${
+                item.current ? "bg-secondary" : ""
+              } ${
+                item.href === pathName.split("/")[2] ? "bg-secondary" : ""
+              } hover:bg-secondary`}
+            >
+              <item.icon className="h-6 w-6" />
+              <span className="ml-3 flex-1 whitespace-nowrap">{item.name}</span>
+            </Link>
+          ) : item?.openComponent ? (
+            item.openComponent
+          ) : null
+        )}
         <div className="mt-auto flex flex-col">
           <PlanDialog />
           {navigation.bottom.map((item, index) => (
             <Link
               key={item.name + index}
-              href={item.href}
+              href={item.href as string}
               className={`flex items-center rounded-lg px-3 py-2 ${
                 item.current ? "bg-secondary" : ""
               } ${

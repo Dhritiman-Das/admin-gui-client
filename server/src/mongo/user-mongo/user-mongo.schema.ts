@@ -1,8 +1,18 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, ObjectId } from 'mongoose';
-import { Project } from '../project-mongo/project-mongo.schema';
+import {
+  Project,
+  ProjectDocument,
+} from '../project-mongo/project-mongo.schema';
 
 export type UserDocument = HydratedDocument<User>;
+export type ProjectPermissionsDocument = HydratedDocument<ProjectPermissions>;
+
+export enum UserRoles {
+  admin = 'admin',
+  developer = 'developer',
+  support = 'support',
+}
 
 export enum Permissions {
   ReadOnly = 'read-only',
@@ -51,10 +61,10 @@ export const AdvancedSettingsSchema =
 @Schema({ _id: false })
 export class ProjectPermissions {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Project' })
-  project: Project;
+  project: ProjectDocument;
 
-  @Prop({ enum: Object.values(Permissions), default: Permissions.ReadOnly })
-  role: PermissionsType;
+  @Prop({ enum: UserRoles, default: UserRoles.support })
+  role: UserRoles;
 
   @Prop({ default: false })
   isAdvancedSettings: boolean;
@@ -62,6 +72,9 @@ export class ProjectPermissions {
   @Prop({ type: AdvancedSettings, default: () => ({}) })
   advancedSettings: HydratedDocument<AdvancedSettings>;
 }
+
+export const ProjectPermissionsSchema =
+  SchemaFactory.createForClass(ProjectPermissions);
 
 @Schema({ timestamps: true })
 export class User {
@@ -96,10 +109,16 @@ export class User {
   namePronounciation?: string;
 
   @Prop({
-    type: [ProjectPermissions],
+    type: [ProjectPermissionsSchema],
     default: [],
   })
-  projects?: ProjectPermissions[];
+  projects?: ProjectPermissionsDocument[];
+
+  @Prop({
+    type: [ProjectPermissionsSchema],
+    default: [],
+  })
+  invitedProjects?: ProjectPermissionsDocument[];
 
   @Prop({ default: false })
   deleted?: boolean;

@@ -4,49 +4,79 @@ import * as React from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
+import { z } from "zod";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Github, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+const LoginFormDataSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const form = useForm<z.infer<typeof LoginFormDataSchema>>({
+    resolver: zodResolver(LoginFormDataSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
+  async function onSubmit(data: z.infer<typeof LoginFormDataSchema>) {
+    console.log({ data });
   }
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={onSubmit}>
-        <div className="grid gap-2">
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading}
-            />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="grid gap-2">
+            <div className="grid gap-1">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="sr-only" htmlFor="email">
+                      Email
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value}
+                        onChange={field.onChange}
+                        id="email"
+                        placeholder="name@example.com"
+                        type="email"
+                        autoCapitalize="none"
+                        autoComplete="email"
+                        required
+                        disabled={isLoading}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sign In with Email
+            </Button>
           </div>
-          <Button disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Sign In with Email
-          </Button>
-        </div>
-      </form>
+        </form>
+      </Form>
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />

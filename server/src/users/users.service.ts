@@ -3,12 +3,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserMongoService } from 'src/mongo/user-mongo/user-mongo.service';
 import { ProjectsService } from 'src/projects/projects.service';
+import { WaitlistsMongoService } from 'src/mongo/waitlists-mongo/waitlists-mongo.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly userMongoService: UserMongoService,
     private readonly projectService: ProjectsService,
+    private readonly waitlistsMongoService: WaitlistsMongoService,
   ) {}
   async create(createUserDto: CreateUserDto) {
     const user = await this.userMongoService.create(createUserDto);
@@ -21,6 +23,14 @@ export class UsersService {
       mode: 'personal',
       deleted: false,
     });
+    const waitlistedProjectsObj = await this.waitlistsMongoService.findOne({
+      email: createUserDto.email,
+    });
+
+    let waitlistedProject = [];
+    if (waitlistedProjectsObj) {
+      waitlistedProject = waitlistedProjectsObj.project;
+    }
     const userUpdated = await this.userMongoService.findOneAndUpdate({
       query: { _id: user._id },
       update: {
@@ -36,10 +46,17 @@ export class UsersService {
               projects: 'admin',
             },
           },
+          invitedProjects: waitlistedProject,
         },
       },
       options: { new: true },
     });
+
+    if (userUpdated && !!waitlistedProjectsObj) {
+      await this.waitlistsMongoService.findOneAndDelete({
+        query: { email: createUserDto.email },
+      });
+    }
     const projectId = project._id.toString();
     return userUpdated;
   }

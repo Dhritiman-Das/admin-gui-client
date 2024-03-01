@@ -12,6 +12,9 @@ interface User extends NextAuthUser {
 }
 
 const handler = NextAuth({
+  pages: {
+    error: "/auth/error",
+  },
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
@@ -30,7 +33,12 @@ const handler = NextAuth({
     }) {
       const isOAuth = account !== null; // true if OAuth, false if email and password. Change the logic later
       console.log({ email: profile?.email });
-
+      console.log({ user, account, profile });
+      if (!profile?.email) {
+        throw new Error(
+          "The email associated with your authentication account was not found. Please ensure you have a verified email in your authentication account."
+        );
+      }
       const response = await checkIfUserExist(profile?.email as string);
 
       if (response && response.data?.userExist === true) {

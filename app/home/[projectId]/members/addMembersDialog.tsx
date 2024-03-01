@@ -103,12 +103,14 @@ export default function AddMembersDialog({ projectId }: { projectId: string }) {
   });
   const addMembersMutation = useMutation({
     mutationFn: addMembers,
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
       queryClient.invalidateQueries({
         queryKey: [`${projectId}/members`],
       });
       setDialogOpen(false);
-      toast.success("Member added successfully");
+      console.log({ data });
+
+      toast.success(data.message || "Member added successfully");
     },
   });
   const role = form.watch("role");

@@ -4,7 +4,7 @@ import {
   createCipheriv,
   createDecipheriv,
 } from 'crypto';
-import { promisify } from 'util';
+import axios from 'axios';
 
 export function generateQuery(
   queryTemplate: string,
@@ -90,5 +90,39 @@ export function safeJsonParse(str: string | undefined) {
   } catch (err) {
     console.error(`Failed to parse JSON string: ${str}`, err);
     return {};
+  }
+}
+
+export async function sendMail({
+  to,
+  subject,
+  text,
+}: {
+  to: string;
+  subject: string;
+  text: string;
+}) {
+  try {
+    const BREVO_API_KEY = process.env.BREVO_API_KEY;
+    const BREVO_ENDPOINT = 'https://api.brevo.com/v3/smtp/email';
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'api-key': BREVO_API_KEY,
+    };
+
+    const data = {
+      sender: { email: 'iamdhritiman01@gmail.com', name: 'Dhritiman Das' },
+      to: [{ email: to }],
+      subject: subject,
+      htmlContent: text, // Assuming the 'text' in the request body is actually HTML content.
+    };
+    console.log({ data });
+
+    const response = await axios.post(BREVO_ENDPOINT, data, { headers });
+    return response.data;
+  } catch (error) {
+    console.log('Error sending mail:', error.message);
   }
 }

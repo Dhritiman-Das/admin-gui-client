@@ -250,6 +250,7 @@ export default function DuplicateQueryDialog({
                           <SelectItem
                             value="Not found"
                             key={"dbCollection" + "notfound"}
+                            disabled
                           >
                             No collection available
                           </SelectItem>

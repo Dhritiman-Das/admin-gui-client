@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UserMongoModule } from 'src/mongo/user-mongo/user-mongo.module';
 import { CaslModule } from 'src/casl/casl.module';
+import { WaitlistsMongoModule } from 'src/mongo/waitlists-mongo/waitlists-mongo.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CaslModule } from 'src/casl/casl.module';
     QueryMongoModule,
     UserMongoModule,
     CaslModule,
+    WaitlistsMongoModule,
   ],
   controllers: [ProjectsController],
   providers: [

@@ -280,6 +280,7 @@ export default function EditQueryDialog({
                           <SelectItem
                             value="Not found"
                             key={"dbCollection" + "notfound"}
+                            disabled
                           >
                             No collection available
                           </SelectItem>

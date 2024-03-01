@@ -13,7 +13,8 @@ import { QueryMongoService } from 'src/mongo/query-mongo/query-mongo.service';
 import { UserMongoService } from 'src/mongo/user-mongo/user-mongo.service';
 import { AddMembersDto } from './dto/add-members.dto';
 import { User } from 'src/mongo/user-mongo/user-mongo.schema';
-import { decryptData, encryptData } from 'lib/helpers';
+import { decryptData, encryptData, sendMail } from 'lib/helpers';
+import { WaitlistsMongoService } from 'src/mongo/waitlists-mongo/waitlists-mongo.service';
 
 @Injectable()
 export class ProjectsService {
@@ -22,6 +23,7 @@ export class ProjectsService {
     private readonly userMongoService: UserMongoService,
     private readonly queryMongoService: QueryMongoService,
     private readonly queryService: QueryService,
+    private readonly waitlistsMongoService: WaitlistsMongoService,
   ) {}
   async create(createProjectDto: CreateProjectDto) {
     const user = await this.userMongoService.findOneNormal({
@@ -250,11 +252,12 @@ export class ProjectsService {
       );
     }
 
+    // Add the project to the user's projects invite List
     const user = await this.userMongoService.findOneAndUpdate({
       query: { email: addMembersDto.email },
       update: {
         $push: {
-          projects: {
+          invitedProjects: {
             project,
             role: addMembersDto.role,
             isAdvancedSettings: addMembersDto.isAdvancedRolesOpen,
@@ -263,6 +266,31 @@ export class ProjectsService {
         },
       },
     });
+
+    if (!user) {
+      //Send the user an invite to email and add the project to the user's waitlisted projects
+      const invite = await sendMail({
+        to: addMembersDto.email,
+        subject: 'Invitation to join a project',
+        text: `You have been invited to join the project ${project.name}. Click on the link to join the project.`,
+      });
+
+      const waitlist = await this.waitlistsMongoService.create({
+        email: addMembersDto.email,
+        projectPermissions: {
+          project: projectId,
+          role: addMembersDto.role,
+          isAdvancedSettings: addMembersDto.isAdvancedRolesOpen,
+          advancedSettings: addMembersDto.advancedRoles,
+        },
+      });
+      // throw new NotFoundException(
+      //   `User with email ${addMembersDto.email} not found. An invite has been sent to their email`,
+      // );
+      return {
+        message: `An invite has been sent to ${addMembersDto.email} to join the project.`,
+      };
+    }
 
     return {
       message: 'User added successfully.',

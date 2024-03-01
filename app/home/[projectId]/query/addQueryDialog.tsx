@@ -233,6 +233,7 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
                         <SelectItem
                           value="Not found"
                           key={"dbCollection" + "notfound"}
+                          disabled
                         >
                           No collection available
                         </SelectItem>

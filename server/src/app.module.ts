@@ -18,6 +18,10 @@ import { HistoryModule } from './history/history.module';
 import { CaslModule } from './casl/casl.module';
 import { LoggingMiddleware } from './middleware/logging.middleware';
 import { RateLimitingMiddleware } from './middleware/rate-limiting.middleware';
+import { NotificationsModule } from './notifications/notifications.module';
+import { NotificationsMongoService } from './mongo/notifications-mongo/notifications-mongo.service';
+import { NotificationsMongoModule } from './mongo/notifications-mongo/notifications-mongo.module';
+import { WaitlistsMongoModule } from './mongo/waitlists-mongo/waitlists-mongo.module';
 
 @Module({
   imports: [
@@ -34,9 +38,12 @@ import { RateLimitingMiddleware } from './middleware/rate-limiting.middleware';
     HistoryMongoModule,
     HistoryModule,
     CaslModule,
+    NotificationsModule,
+    NotificationsMongoModule,
+    WaitlistsMongoModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserMongoService, ProjectMongoService],
+  providers: [AppService, UserMongoService, ProjectMongoService, NotificationsMongoService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

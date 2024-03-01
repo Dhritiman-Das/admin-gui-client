@@ -1,21 +1,31 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsObject } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  Permissions as ProjectPermissions,
+  UserRoles,
+} from 'src/mongo/user-mongo/user-mongo.schema';
 
 export class AdvancedRoles {
-  @IsNotEmpty()
-  @IsEnum(['read-only', 'read-write', 'admin'])
-  query: string;
+  @IsEnum(ProjectPermissions, { each: true })
+  query: ProjectPermissions;
 
-  @IsNotEmpty()
-  @IsEnum(['read-only', 'read-write', 'admin'])
-  mutate: string;
+  @IsEnum(ProjectPermissions, { each: true })
+  mutate: ProjectPermissions;
 
-  @IsNotEmpty()
-  @IsEnum(['read-only', 'read-write', 'admin'])
-  members: string;
+  @IsEnum(ProjectPermissions, { each: true })
+  members: ProjectPermissions;
 
-  @IsNotEmpty()
-  @IsEnum(['read-only', 'read-write', 'admin'])
-  projects: string;
+  @IsEnum(ProjectPermissions, { each: true })
+  projects: ProjectPermissions;
 }
 
 export class AddMembersDto {
@@ -24,8 +34,8 @@ export class AddMembersDto {
   email: string;
 
   @IsNotEmpty()
-  @IsEnum(['admin', 'developer', 'support'])
-  role: string;
+  @IsEnum(UserRoles)
+  role: UserRoles;
 
   @IsNotEmpty()
   isAdvancedRolesOpen: boolean;
@@ -33,4 +43,20 @@ export class AddMembersDto {
   @IsNotEmpty()
   @IsObject()
   advancedRoles: AdvancedRoles;
+}
+
+export class ProjectPermissionsDto {
+  @IsMongoId()
+  project: string;
+
+  @IsEnum(UserRoles)
+  role: UserRoles;
+
+  @IsBoolean()
+  isAdvancedSettings: boolean;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AdvancedRoles)
+  advancedSettings: AdvancedRoles;
 }

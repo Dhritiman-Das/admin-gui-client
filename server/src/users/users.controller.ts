@@ -24,6 +24,8 @@ export class UsersController {
   @Public()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
+    console.log({ createUserDto });
+
     return this.usersService.create(createUserDto);
   }
 
@@ -31,9 +33,12 @@ export class UsersController {
   @Post('/exist')
   @HttpCode(HttpStatus.OK)
   async checkIfUserExist(@Body() checkIfUserExistDto: { email: string }) {
+    console.log({ checkIfUserExistDto });
+
     const user = await this.usersService.checkIfUserExist(
       checkIfUserExistDto.email,
     );
+    console.log({ user });
 
     if (user) {
       return { userExist: true, _id: user._id };
