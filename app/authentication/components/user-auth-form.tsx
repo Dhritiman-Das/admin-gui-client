@@ -18,6 +18,7 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { useSearchParams } from "next/navigation";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -26,6 +27,8 @@ const LoginFormDataSchema = z.object({
 });
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const form = useForm<z.infer<typeof LoginFormDataSchema>>({
@@ -70,7 +73,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 )}
               />
             </div>
-            <Button type="submit" disabled={isLoading}>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              onClick={() =>
+                signIn("email", { email: form.getValues("email"), callbackUrl })
+              }
+            >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In with Email
             </Button>
@@ -91,7 +100,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         variant="outline"
         type="button"
         disabled={isLoading}
-        onClick={() => signIn()}
+        onClick={() => signIn("github", { callbackUrl })}
       >
         {isLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
