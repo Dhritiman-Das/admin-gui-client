@@ -24,9 +24,13 @@ export class UsersController {
   @Public()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    console.log({ createUserDto });
+    try {
+      console.log({ createUserDto });
 
-    return this.usersService.create(createUserDto);
+      return this.usersService.create(createUserDto);
+    } catch (error) {
+      console.log({ error });
+    }
   }
 
   @Public()
@@ -60,10 +64,10 @@ export class UsersController {
         },
       },
     });
-    console.log(user.projects);
-
+    console.log({ user });
+    if (!user?.projects) return user;
     // Decrypt the dbConnectionString for each project
-    for (const userProject of user.projects) {
+    for (const userProject of user?.projects) {
       console.log({ userProject });
 
       userProject.project.dbConnectionString = await decryptData(

@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 
 export const profileSchema = z.object({
   name: z.string(),
-  profilePic: z.string(),
+  image: z.string(),
   email: z.string(),
   createdAt: z.string(),
   timeZone: z.string(),
@@ -36,7 +36,7 @@ export const querySchema = z.object({
   queryString: z.string(),
   author: z.object({
     name: z.string(),
-    profilePic: z.string(),
+    image: z.string(),
     email: z.string(),
     createdAt: z.string(),
     timeZone: z.string(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { MySession } from "@/app/api/auth/[...nextauth]/route";
+import { useUserToken } from "@/app/hooks/useUserToken";
 import ErrorScreen from "@/components/errorScreen";
 import LoadingScreen from "@/components/loadingScreen";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,8 +42,7 @@ export default function page({
     queryId: string;
   };
 }) {
-  const { data: session } = useSession();
-  const jwtToken = (session as MySession)?.userToken;
+  const jwtToken = useUserToken();
   const {
     isPending,
     error,
@@ -70,7 +69,7 @@ export default function page({
     queryString: string;
     author: {
       name: string;
-      profilePic: string;
+      image: string;
       _id: string;
     };
     createdAt: string;
@@ -138,7 +137,7 @@ export default function page({
               <Link href={"/users/" + data?.author._id}>
                 <Avatar>
                   <AvatarImage
-                    src={data.author.profilePic}
+                    src={data.author.image}
                     alt={`@${data?.author._id}`}
                   />
                   <AvatarFallback>DD</AvatarFallback>

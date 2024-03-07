@@ -5,7 +5,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { MongoClient } from 'mongodb';
-import { CreateProjectDto } from './dto/create-project.dto';
+import {
+  CreateProjectDto,
+  CreateProjectWithAdminDto,
+} from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectMongoService } from 'src/mongo/project-mongo/project-mongo.service';
 import { QueryService } from 'src/query/query.service';
@@ -25,17 +28,42 @@ export class ProjectsService {
     private readonly queryService: QueryService,
     private readonly waitlistsMongoService: WaitlistsMongoService,
   ) {}
-  async create(createProjectDto: CreateProjectDto) {
-    const user = await this.userMongoService.findOneNormal({
-      query: { _id: createProjectDto.admin },
-    });
-
-    return await this.projectMongoService.create({
+  async create(createProjectDto: CreateProjectWithAdminDto) {
+    const project = await this.projectMongoService.create({
       ...createProjectDto,
       dbConnectionString: await encryptData(
         createProjectDto.dbConnectionString,
       ),
     });
+    console.log({ project });
+
+    const projectPermission = {
+      project: project._id,
+      role: 'admin',
+      isAdvancedSettings: false,
+      advancedSettings: {
+        query: 'admin',
+        mutate: 'admin',
+        members: 'admin',
+        projects: 'admin',
+      },
+    };
+
+    const user = await this.userMongoService.findOneAndUpdate({
+      query: { _id: createProjectDto.admin },
+      update: {
+        $push: {
+          projects: projectPermission,
+        },
+      },
+    });
+
+    console.log({ user });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return project;
   }
 
   findAll() {
@@ -102,7 +130,7 @@ export class ProjectsService {
       query: query,
       populate: {
         path: 'author',
-        select: 'name profilePic email createdAt timeZone verified title',
+        select: 'name image email createdAt timeZone verified title',
       },
     });
   }
@@ -130,7 +158,7 @@ export class ProjectsService {
       query: query,
       populate: {
         path: 'author',
-        select: 'name profilePic',
+        select: 'name image',
       },
     });
   }
@@ -221,7 +249,7 @@ export class ProjectsService {
       projection: {
         name: 1,
         email: 1,
-        profilePic: 1,
+        image: 1,
         'projects.$': 1,
       },
     });

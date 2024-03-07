@@ -1,3 +1,4 @@
+import { Project } from "@/app/create-project/create-project-form";
 import axios from "axios";
 
 const axiosInstance = axios.create({
@@ -21,6 +22,21 @@ export const getDbDetails = async ({
   token: string;
 }) => {
   const response = await axiosInstance.get(`projects/${projectId}/db-details`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
+};
+
+export const createProject = async ({
+  project,
+  token,
+}: {
+  project: Project;
+  token: string;
+}) => {
+  const response = await axiosInstance.post(`projects`, project, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

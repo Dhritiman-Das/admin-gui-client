@@ -15,7 +15,7 @@ export function ProfileHoverCard({ profile }: { profile: Profile }) {
       <HoverCardTrigger asChild>
         <Button variant="link">
           <Avatar>
-            <AvatarImage src={profile?.profilePic || ""} />
+            <AvatarImage src={profile?.image || ""} />
             <AvatarFallback>
               {profile?.name?.slice(0, 2) || "DD"}
             </AvatarFallback>
@@ -25,7 +25,7 @@ export function ProfileHoverCard({ profile }: { profile: Profile }) {
       <HoverCardContent className="w-80">
         <div className="flex justify-between space-x-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={profile?.profilePic || ""} />
+            <AvatarImage src={profile?.image || ""} />
             <AvatarFallback>{profile?.name.slice(0, 2) || "DD"}</AvatarFallback>
           </Avatar>
           <div className="space-y-1">

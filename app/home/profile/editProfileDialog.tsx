@@ -45,10 +45,8 @@ import { Loader2 } from "lucide-react";
 
 export const UserProfileSchema = z.object({
   email: z.string(),
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  profilePic: z.string(),
+  name: z.string(),
+  image: z.string(),
   telephone: z.string(),
   displayName: z.string(),
   title: z.string(),
@@ -76,11 +74,13 @@ type SelectFieldType = {
 
 type FieldType = TextFieldType | SelectFieldType;
 
-type FooType = {
+type Fields = {
   [K in keyof UserProfileWithoutVerified]: FieldType;
 };
 
-const foo: FooType = {
+export type ProfileFields = keyof z.infer<typeof UserProfileSchema>;
+
+const fields: Fields = {
   email: {
     label: "Email",
     type: "textField",
@@ -93,7 +93,7 @@ const foo: FooType = {
     example: "John Doe",
   },
 
-  profilePic: {
+  image: {
     label: "Profile picture",
     type: "textField",
     example: "https://example.com/profile-pic.jpg",
@@ -132,8 +132,10 @@ const foo: FooType = {
 
 export default function EditProfileDialog({
   activateBtn,
+  autofocus,
 }: {
   activateBtn: React.ReactNode;
+  autofocus?: ProfileFields;
 }) {
   const queryClient = useQueryClient();
   const jwtToken = useUserToken();
@@ -145,7 +147,7 @@ export default function EditProfileDialog({
     createdAt: Date;
     updatedAt: Date;
     telephone: string;
-    profilePic: string;
+    image: string;
     displayName: string;
     title: string;
     timeZone: string;
@@ -157,7 +159,7 @@ export default function EditProfileDialog({
     defaultValues: {
       name: "",
       email: "",
-      profilePic: "",
+      image: "",
       telephone: "",
       displayName: "",
       title: "",
@@ -197,7 +199,7 @@ export default function EditProfileDialog({
   useEffect(() => {
     form.setValue("name", data?.name || "");
     form.setValue("email", data?.email || "");
-    form.setValue("profilePic", data?.profilePic || "");
+    form.setValue("image", data?.image || "");
     form.setValue("telephone", data?.telephone || "");
     form.setValue("displayName", data?.displayName || "");
     form.setValue("title", data?.title || "");
@@ -240,7 +242,7 @@ export default function EditProfileDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             {keys.map((key) => {
               const fieldKey = key as keyof z.infer<typeof UserProfileSchema>;
-              const fieldObj = foo[key as keyof FooType];
+              const fieldObj = fields[key as keyof Fields];
               return (
                 <FormField
                   key={key}
@@ -257,6 +259,7 @@ export default function EditProfileDialog({
                             value={field.value.toString()}
                             onChange={field.onChange}
                             disabled={fieldObj.disabled ?? false}
+                            autoFocus={autofocus === fieldKey}
                           />
                         ) : fieldObj["type"] === "textArea" ? (
                           <Textarea
@@ -264,18 +267,23 @@ export default function EditProfileDialog({
                             {...field}
                             value={field.value.toString()}
                             onChange={field.onChange}
+                            autoFocus={autofocus === fieldKey}
                           />
                         ) : fieldObj["type"] === "Select" ? (
                           <Select
                             value={field.value.toString()}
                             onValueChange={field.onChange}
                           >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger
+                              className="w-full"
+                              autoFocus={autofocus === fieldKey}
+                            >
                               <SelectValue
                                 placeholder={`Select a ${fieldObj.label}`}
+                                autoFocus={autofocus === fieldKey}
                               />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent autoFocus={autofocus === fieldKey}>
                               {fieldObj.options.map((option, index) => (
                                 <SelectItem
                                   value={option}

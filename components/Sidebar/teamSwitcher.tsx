@@ -27,7 +27,6 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { getUserInfo } from "@/routes/user-routes";
-import { MySession } from "@/app/api/auth/[...nextauth]/route";
 import { useSession } from "next-auth/react";
 import {
   useRouter,
@@ -36,6 +35,7 @@ import {
   usePathname,
 } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
+import { useUserToken } from "@/app/hooks/useUserToken";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -87,11 +87,10 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathName = usePathname();
-  const { data: session } = useSession();
   const [currentProjectId, setCurrentProjectId] = React.useState<string | null>(
     null
   );
-  const jwtToken = (session as MySession)?.userToken;
+  const jwtToken = useUserToken();
   const [projects, setProjects] = React.useState<Project[]>([]);
   const [projectObject, setProjectObject] = React.useState<ProjectGroups>({
     teams: [],
@@ -259,7 +258,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                     }}
                   >
                     <PlusCircle className="mr-2 h-5 w-5" />
-                    Create Team
+                    Create Project
                   </CommandItem>
                 </DialogTrigger>
               </CommandGroup>
@@ -269,9 +268,9 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
       </Popover>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create team</DialogTitle>
+          <DialogTitle>Create project</DialogTitle>
           <DialogDescription>
-            Add a new team to manage products and customers.
+            Add a new project to manage products and customers.
           </DialogDescription>
         </DialogHeader>
         <div>

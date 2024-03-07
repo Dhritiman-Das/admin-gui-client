@@ -20,7 +20,7 @@ export const historySchema = z.object({
   user: z.object({
     _id: z.string(),
     name: z.string(),
-    profilePic: z.string(),
+    image: z.string(),
   }),
   query: z.object({
     _id: z.string(),
@@ -128,7 +128,7 @@ export const columns: ColumnDef<History>[] = [
                 <Link href={`/users/${user?._id ?? ""}`}>
                   <Avatar className="h-8 w-8">
                     <AvatarImage
-                      src={user?.profilePic ?? ""}
+                      src={user?.image ?? ""}
                       alt={user?.name ?? "No Name"}
                     />
                     <AvatarFallback>DD</AvatarFallback>

@@ -32,7 +32,7 @@ export const memberSchema = z.object({
   _id: z.string(),
   name: z.string(),
   email: z.string(),
-  profilePic: z.string().optional(),
+  image: z.string().optional(),
   projects: z.array(projectSchema),
 });
 
@@ -45,14 +45,17 @@ export const columns: ColumnDef<Member>[] = [
       <DataTableColumnHeader column={column} title="Name" />
     ),
     cell: ({ row }) => {
-      const name = (row.getValue("name") as Member["name"]) ?? "No Name";
-      const profilePic = row.original.profilePic || "";
+      const name = (row.getValue("name") as Member["name"]) || "No Name";
+      const image = row.original.image;
       const email = row.original.email;
       return (
         <div className="flex items-center">
           <div className="h-11 w-11 flex-shrink-0">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={profilePic ?? ""} alt={name ?? "No Name"} />
+              <AvatarImage
+                src={image || "/svgs/default-profile.svg"}
+                alt={name || "No Name"}
+              />
               <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
           </div>

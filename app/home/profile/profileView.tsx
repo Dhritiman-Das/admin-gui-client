@@ -7,7 +7,7 @@ import { getUserInfo } from "@/routes/user-routes";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import React from "react";
-import EditProfileDialog from "./editProfileDialog";
+import EditProfileDialog, { ProfileFields } from "./editProfileDialog";
 import { Button } from "@/components/ui/button";
 import { Clock, Mail, Phone, Plus } from "lucide-react";
 import { getLocalTime } from "@/server/lib/helpers";
@@ -34,6 +34,7 @@ export function TextComponent({
 
 export function LabelValue({
   label,
+  field,
   icon,
   type,
   showLabel = true,
@@ -41,6 +42,7 @@ export function LabelValue({
   loading,
 }: {
   label: string;
+  field: ProfileFields;
   icon?: React.ReactNode;
   type: "H3" | "H4" | "P";
   showLabel?: boolean;
@@ -58,6 +60,7 @@ export function LabelValue({
               Add {label}
             </div>
           }
+          autofocus={field}
         />
       </>
     );
@@ -105,7 +108,7 @@ export default function ProfileView() {
           ) : (
             <Image
               className="shadow-sm rounded-lg"
-              src={userQuery?.data?.profilePic}
+              src={userQuery?.data?.image || "/svgs/default-profile.svg"}
               alt="Profile"
               width={200}
               height={200}
@@ -115,20 +118,23 @@ export default function ProfileView() {
         <div className="basicInfo flex flex-col gap-2">
           <LabelValue
             label="Name"
+            field="name"
             type="H3"
             showLabel={false}
             value={userQuery?.data?.name}
             loading={isPending}
           />
           <LabelValue
-            label="title"
+            label="Title"
+            field="title"
             type="H4"
             showLabel={false}
             value={userQuery?.data?.title}
             loading={isPending}
           />
           <LabelValue
-            label="pronounciation"
+            label="Pronounciation"
+            field="namePronounciation"
             type="P"
             showLabel={false}
             value={userQuery?.data?.namePronounciation}
@@ -136,6 +142,7 @@ export default function ProfileView() {
           />
           <LabelValue
             label="Email"
+            field="email"
             type="P"
             showLabel={false}
             value={userQuery?.data?.email}
@@ -144,6 +151,7 @@ export default function ProfileView() {
           />
           <LabelValue
             label="Phone"
+            field="telephone"
             type="P"
             showLabel={false}
             value={userQuery?.data?.telephone}
@@ -152,6 +160,7 @@ export default function ProfileView() {
           />
           <LabelValue
             label="time-zone"
+            field="timeZone"
             type="P"
             showLabel={false}
             value={getLocalTime(userQuery?.data?.timeZone)}
@@ -163,7 +172,20 @@ export default function ProfileView() {
       <div className="">
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>About me</CardTitle>
+            <div className="flex justify-between">
+              <CardTitle>About me</CardTitle>
+              {!!!isPending && !!!userQuery?.data?.bio && (
+                <EditProfileDialog
+                  activateBtn={
+                    <div className="inline-flex w-fit font-normal text-sm text-blue-600 gap-2 items-center cursor-pointer hover:underline">
+                      <Plus />
+                      Add Bio
+                    </div>
+                  }
+                  autofocus={"bio"}
+                />
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {isPending ? (

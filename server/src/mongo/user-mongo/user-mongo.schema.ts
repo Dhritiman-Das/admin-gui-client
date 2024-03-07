@@ -78,7 +78,7 @@ export const ProjectPermissionsSchema =
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true })
+  @Prop({ default: '' })
   name: string;
 
   @Prop({ required: true, unique: true })
@@ -88,7 +88,7 @@ export class User {
   verified: boolean;
 
   @Prop({ default: '' })
-  profilePic: string;
+  image: string;
 
   @Prop({ default: '' })
   telephone?: string;

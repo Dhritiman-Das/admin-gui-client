@@ -3,13 +3,13 @@ import { Separator } from "@/components/ui/separator";
 import React from "react";
 
 export default function SingleNotification({
-  profilePic,
+  image,
   name,
   createdAt,
   isLast,
   seen,
 }: {
-  profilePic: string;
+  image: string;
   name: string;
   createdAt: string;
   isLast: boolean;

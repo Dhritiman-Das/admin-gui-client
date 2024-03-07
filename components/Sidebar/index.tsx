@@ -17,6 +17,7 @@ import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { PlanDialog } from "./planDialog";
 import { NotificationDropdown } from "../essentials/notification-dropdown/notificationDropdown";
+import AppLogo from "../essentials/app-logo";
 
 type SingleNavigation = {
   name: string;
@@ -100,6 +101,9 @@ export default function Sidebar() {
       aria-label="Sidebar"
     >
       <div className="flex h-full flex-col overflow-y-auto border-r border-border bg-background px-3 py-4">
+        <div className="mb-2">
+          <AppLogo />
+        </div>
         <TeamSwitcher />
         <div className="my-1"></div>
         {navigation.top.map((item, index) =>

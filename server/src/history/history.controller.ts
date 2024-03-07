@@ -26,7 +26,7 @@ export class HistoryController {
       query: { project: projectId },
       options: { sort: { createdAt: -1 } },
       populate: [
-        { path: 'user', select: '_id name profilePic' },
+        { path: 'user', select: '_id name image' },
         { path: 'query', select: '_id name dbName dbCollectionName' },
       ],
     });
@@ -37,7 +37,7 @@ export class HistoryController {
     return this.historyService.findOne({
       query: { _id: id },
       populate: [
-        { path: 'user', select: '_id name profilePic' },
+        { path: 'user', select: '_id name image' },
         { path: 'query', select: '_id name dbName dbCollectionName' },
       ],
     });

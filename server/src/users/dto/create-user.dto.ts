@@ -11,5 +11,5 @@ export class CreateUserDto {
   verified: boolean;
 
   @IsString()
-  profilePic: string;
+  image: string;
 }

@@ -14,6 +14,7 @@ export class UsersService {
   ) {}
   async create(createUserDto: CreateUserDto) {
     const user = await this.userMongoService.create(createUserDto);
+    console.log({ user });
 
     const project = await this.projectService.create({
       name: createUserDto.name,
@@ -21,11 +22,11 @@ export class UsersService {
       dbConnectionString: '',
       admin: user,
       mode: 'personal',
-      deleted: false,
     });
     const waitlistedProjectsObj = await this.waitlistsMongoService.findOne({
       email: createUserDto.email,
     });
+    console.log({ waitlistedProjectsObj });
 
     let waitlistedProject = [];
     if (waitlistedProjectsObj) {
@@ -57,7 +58,7 @@ export class UsersService {
         query: { email: createUserDto.email },
       });
     }
-    const projectId = project._id.toString();
+    // const projectId = project._id.toString();
     return userUpdated;
   }
 

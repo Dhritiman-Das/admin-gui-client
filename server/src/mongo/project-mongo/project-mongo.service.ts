@@ -9,7 +9,9 @@ export class ProjectMongoService {
     @InjectModel('Project') private readonly projectModel: Model<Project>,
   ) {}
 
-  async create(project: Project) {
+  async create(project: Project): Promise<ProjectDocument> {
+    console.log({ projectPayload: project });
+
     const createdProject = new this.projectModel(project);
     return await createdProject.save();
   }

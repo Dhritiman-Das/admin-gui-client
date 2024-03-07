@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import ReadValues from "./readValues";
 import EditValues from "./editValues";
-import { MySession } from "@/app/api/auth/[...nextauth]/route";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getProjectInfo, updateProject } from "@/routes/project-routes";
 import { Project, ProjectEdit } from "@/types/project";
@@ -16,14 +15,14 @@ import { AuthRequiredError } from "@/lib/exceptions";
 import { useMutation } from "@/app/hooks/customMutation";
 import LoadingScreen from "@/components/loadingScreen";
 import ErrorScreen from "@/components/errorScreen";
+import { useUserToken } from "@/app/hooks/useUserToken";
 
 export default function page() {
   const queryClient = useQueryClient();
-  const { data: session } = useSession();
+  const jwtToken = useUserToken();
   const [project, setProject] = React.useState<Project>();
   const [projectEdit, setProjectEdit] = React.useState<ProjectEdit>();
   const [currentProjectId, setCurrentProjectId] = React.useState<string>("");
-  const jwtToken = (session as MySession)?.userToken;
   const {
     isPending,
     error,

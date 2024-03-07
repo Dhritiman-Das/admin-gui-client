@@ -5,49 +5,49 @@ export default function AccountNotifications() {
   return (
     <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto scroll-p-0">
       <SingleNotification
-        profilePic=""
+        image=""
         createdAt=""
         isLast={false}
         name=""
         seen={false}
       />
       <SingleNotification
-        profilePic=""
+        image=""
         createdAt=""
         isLast={false}
         name=""
         seen={true}
       />
       <SingleNotification
-        profilePic=""
+        image=""
         createdAt=""
         isLast={false}
         name=""
         seen={false}
       />
       <SingleNotification
-        profilePic=""
+        image=""
         createdAt=""
         isLast={false}
         name=""
         seen={false}
       />
       <SingleNotification
-        profilePic=""
+        image=""
         createdAt=""
         isLast={false}
         name=""
         seen={false}
       />
       <SingleNotification
-        profilePic=""
+        image=""
         createdAt=""
         isLast={false}
         name=""
         seen={false}
       />
       <SingleNotification
-        profilePic=""
+        image=""
         createdAt=""
         isLast={true}
         name=""

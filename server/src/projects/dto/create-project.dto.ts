@@ -23,10 +23,12 @@ export class CreateProjectDto {
   @IsString()
   dbConnectionString: string;
 
-  @IsNotEmpty()
-  admin: User;
+  // @IsBoolean()
+  // @IsOptional()
+  // deleted?: boolean;
+}
 
-  @IsBoolean()
-  @IsOptional()
-  deleted?: boolean;
+export class CreateProjectWithAdminDto extends CreateProjectDto {
+  @IsString()
+  admin: User;
 }

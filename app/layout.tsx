@@ -6,6 +6,12 @@ import SessionProvider from "@/components/SessionProvider";
 import ReactQueryProvider from "./home/reactQueryClientProvider";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
+import { getSessionFn, getUserInfo } from "@/routes/user-routes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +25,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["user/session"],
+    queryFn: () => getSessionFn(),
+  });
   const session = await getServerSession();
   return (
     <ReactQueryProvider>
@@ -30,7 +41,11 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SessionProvider session={session}>{children}</SessionProvider>
+            <SessionProvider session={session}>
+              <HydrationBoundary state={dehydrate(queryClient)}>
+                {children}
+              </HydrationBoundary>
+            </SessionProvider>
             <Toaster />
           </ThemeProvider>
         </body>

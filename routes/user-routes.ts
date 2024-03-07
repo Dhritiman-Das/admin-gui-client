@@ -15,10 +15,18 @@ const axiosInstance = axios.create({
 //   return config;
 // });
 
+export const getSessionFn = async () => {
+  const response = await axios.get("/api/auth/session");
+  if (response?.data && Object.keys(response.data).length === 0) {
+    return null;
+  }
+  return response;
+};
+
 export const createUser = async (user: {
   name: string;
   email: string;
-  profilePic: string;
+  image: string;
   verified: boolean;
 }) => {
   console.log({ user });

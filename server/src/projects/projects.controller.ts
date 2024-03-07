@@ -23,6 +23,8 @@ import { CheckAbility } from 'src/casl/abilities.decorator';
 import { Project } from 'src/mongo/project-mongo/project-mongo.schema';
 import { Query } from 'src/mongo/query-mongo/query-mongo.schema';
 import { Member } from './entities/project.entity';
+import { Request } from 'express';
+import { RequestWithUser } from 'types/request';
 
 @UseGuards(AuthGuard)
 @Controller('projects')
@@ -34,9 +36,13 @@ export class ProjectsController {
   ) {}
 
   @Post()
-  create(@Body() createProjectDto: CreateProjectDto, @Req() req) {
-    const userEmail = req.user as string;
-    return this.projectsService.create(createProjectDto);
+  create(
+    @Body() createProjectDto: CreateProjectDto,
+    @Req() req: RequestWithUser,
+  ) {
+    const admin = req.user.userId;
+    console.log({ admin });
+    return this.projectsService.create({ ...createProjectDto, admin });
   }
 
   @CheckAbility({

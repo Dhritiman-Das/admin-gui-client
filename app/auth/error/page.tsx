@@ -23,7 +23,7 @@ export default function () {
         />
         <div className="w-5/12 flex flex-col items-center justify-center gap-4">
           <H2 className="self-start">Error</H2>
-          <H4>{error}</H4>
+          <H4 className="self-start">{error}</H4>
           <div className="flex gap-4 self-start">
             <Button onClick={() => signOut()}>Logout</Button>
             <ModeToggle />
