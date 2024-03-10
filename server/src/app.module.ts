@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { UserMongoService } from './mongo/user-mongo/user-mongo.service';
@@ -27,6 +28,15 @@ import { WaitlistsMongoModule } from './mongo/waitlists-mongo/waitlists-mongo.mo
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGO_URI),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      },
+    }),
     UsersModule,
     UserMongoModule,
     ProjectMongoModule,
@@ -43,7 +53,12 @@ import { WaitlistsMongoModule } from './mongo/waitlists-mongo/waitlists-mongo.mo
     WaitlistsMongoModule,
   ],
   controllers: [AppController],
-  providers: [AppService, UserMongoService, ProjectMongoService, NotificationsMongoService],
+  providers: [
+    AppService,
+    UserMongoService,
+    ProjectMongoService,
+    NotificationsMongoService,
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

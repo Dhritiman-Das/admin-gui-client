@@ -179,6 +179,15 @@ export class ProjectsController {
   }
 
   @CheckAbility({
+    action: Action.Read,
+    subject: Member,
+  })
+  @Get('/:projectId/members/invited')
+  listInvitedMembers(@Param('projectId') projectId: string) {
+    return this.projectsService.listInvitedMembers(projectId);
+  }
+
+  @CheckAbility({
     action: Action.Update,
     subject: Member,
   })
@@ -186,10 +195,21 @@ export class ProjectsController {
   addMembers(
     @Param('projectId') projectId: string,
     @Body() addMembersDto: AddMembersDto,
-    @Req() req: any,
+    @Req() req: RequestWithUser,
   ) {
-    const userId = req.user.userId as string;
-    return this.projectsService.addMembers({ projectId, addMembersDto });
+    const userId = req.user.userId;
+    const userEmail = req.user.email;
+    const userName = req.user.name;
+    console.log({ user: req.user, ip: req.ip });
+
+    const ip = req.ip;
+    return this.projectsService.addMembers({
+      projectId,
+      addMembersDto,
+      invitorEmail: userEmail,
+      invitorName: userName,
+      ip,
+    });
   }
 
   @CheckAbility({

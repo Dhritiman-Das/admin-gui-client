@@ -42,6 +42,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.49.3",
+    "react-json-editor-ajrm": "^2.5.14",
     "react-json-tree": "^0.18.0",
     "sonner": "^1.4.0",
     "tailwind-merge": "^2.2.1",

@@ -219,6 +219,23 @@ export const getMembers = async ({
   });
   return response;
 };
+export const getInvitedMembers = async ({
+  projectId,
+  token,
+}: {
+  projectId: string;
+  token: string;
+}) => {
+  const response = await axiosInstance.get(
+    `projects/${projectId}/members/invited`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response;
+};
 
 export const addMembers = async ({
   projectId,

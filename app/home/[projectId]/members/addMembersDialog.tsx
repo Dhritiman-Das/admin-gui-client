@@ -107,6 +107,9 @@ export default function AddMembersDialog({ projectId }: { projectId: string }) {
       queryClient.invalidateQueries({
         queryKey: [`${projectId}/members`],
       });
+      queryClient.invalidateQueries({
+        queryKey: [`${projectId}/members/invited`],
+      });
       setDialogOpen(false);
       console.log({ data });
 

@@ -6,7 +6,7 @@ import { DataTable } from "./data-table";
 import { Member, columns } from "./columns";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import { useQuery } from "@tanstack/react-query";
-import { getMembers } from "@/routes/project-routes";
+import { getInvitedMembers, getMembers } from "@/routes/project-routes";
 import { useUserInfo } from "@/app/hooks/useUserInfo";
 import LoadingScreen from "@/components/loadingScreen";
 import ErrorScreen from "@/components/errorScreen";
@@ -29,22 +29,35 @@ export default function ClientComponent({
       getMembers({ projectId: projectId, token: jwtToken as string }),
     enabled: !!jwtToken && !!projectId,
   });
+  const {
+    isPending: isInvitedMembersPending,
+    error: invitedMembersError,
+    isSuccess: invitedMembersIsSuccess,
+    data: getInvitedMembersData,
+  } = useQuery({
+    queryKey: [`${projectId}/members/invited`],
+    queryFn: () =>
+      getInvitedMembers({ projectId: projectId, token: jwtToken as string }),
+    enabled: !!jwtToken && !!projectId,
+  });
   const user = useUserInfo();
   console.log({ user });
 
-  const [data, setData] = useState<Member[]>([]);
+  const [membersList, setMembersList] = useState<Member[]>([]);
+  const [invitedMembersList, setInvitedMembersList] = useState<Member[]>([]);
   useEffect(() => {
-    console.log({ data });
-  }, [data]);
+    console.log({ data: membersList });
+  }, [membersList]);
   useEffect(() => {
     if (isSuccess) {
-      console.log({
-        queryData: getMembersData?.data,
-      });
-
-      setData(getMembersData?.data || []);
+      setMembersList(getMembersData?.data || []);
     }
   }, [isSuccess, getMembersData?.data]);
+  useEffect(() => {
+    if (invitedMembersIsSuccess) {
+      setInvitedMembersList(getInvitedMembersData?.data || []);
+    }
+  }, [invitedMembersIsSuccess, getInvitedMembersData?.data]);
   if (isPending) return <LoadingScreen />;
   if (error) return <ErrorScreen error={error} />;
   return (
@@ -56,7 +69,10 @@ export default function ClientComponent({
         <AddMembersDialog projectId={projectId} />
       </div>
       <div className="">
-        <DataTable columns={columns} data={data} />
+        <DataTable
+          columns={columns}
+          data={[...membersList, ...invitedMembersList]}
+        />
       </div>
     </>
   );

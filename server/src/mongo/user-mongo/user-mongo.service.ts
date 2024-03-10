@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user-mongo.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Project } from '../project-mongo/project-mongo.schema';
 
 @Injectable()
@@ -60,18 +60,37 @@ export class UserMongoService {
   async findAll({
     query,
     projection,
-    options,
     populate,
   }: {
     query?: any;
     projection?: any;
     options?: any;
     populate?: any;
-  }) {
+  }): Promise<UserDocument[]> {
     return await this.userModel
-      .find(query, projection, options)
+      .find(query, projection)
       .populate(populate)
       .exec();
+  }
+
+  async findInvitedRegisteredUsers(projectId: string) {
+    console.log({ projectId });
+
+    const registeredUsers = await this.userModel.aggregate([
+      { $match: { 'invitedProjects.project': new Types.ObjectId(projectId) } },
+      { $unwind: '$invitedProjects' },
+      { $match: { 'invitedProjects.project': new Types.ObjectId(projectId) } },
+      {
+        $group: {
+          _id: '$_id',
+          email: { $first: '$email' },
+          image: { $first: '$image' },
+          name: { $first: '$name' },
+          projects: { $push: '$invitedProjects' },
+        },
+      },
+    ]);
+    return registeredUsers;
   }
 
   async findOneNormal({

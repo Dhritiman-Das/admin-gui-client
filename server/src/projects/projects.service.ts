@@ -16,8 +16,10 @@ import { QueryMongoService } from 'src/mongo/query-mongo/query-mongo.service';
 import { UserMongoService } from 'src/mongo/user-mongo/user-mongo.service';
 import { AddMembersDto } from './dto/add-members.dto';
 import { User } from 'src/mongo/user-mongo/user-mongo.schema';
-import { decryptData, encryptData, sendMail } from 'lib/helpers';
+import { decryptData, encryptData } from 'lib/helpers';
 import { WaitlistsMongoService } from 'src/mongo/waitlists-mongo/waitlists-mongo.service';
+import { MailerService } from '@nestjs-modules/mailer';
+import { PROJECT_JOINING_INVITE } from 'lib/email-template/project-joining-invite';
 
 @Injectable()
 export class ProjectsService {
@@ -27,6 +29,7 @@ export class ProjectsService {
     private readonly queryMongoService: QueryMongoService,
     private readonly queryService: QueryService,
     private readonly waitlistsMongoService: WaitlistsMongoService,
+    private readonly mailerService: MailerService,
   ) {}
   async create(createProjectDto: CreateProjectWithAdminDto) {
     const project = await this.projectMongoService.create({
@@ -255,13 +258,30 @@ export class ProjectsService {
     });
   }
 
+  async listInvitedMembers(projectId: string) {
+    const registeredUsers =
+      await this.userMongoService.findInvitedRegisteredUsers(projectId);
+
+    const waitlistedUsers =
+      await this.waitlistsMongoService.findAllUnregisteredUsers(projectId);
+
+    return [...registeredUsers, ...waitlistedUsers];
+  }
+
   async addMembers({
     projectId,
     addMembersDto,
+    invitorEmail,
+    invitorName,
+    ip,
   }: {
     projectId: string;
     addMembersDto: AddMembersDto;
+    invitorEmail: string;
+    invitorName?: string;
+    ip: string;
   }) {
+    console.log({ addMembersDto, invitorEmail, invitorName, ip });
     const project = await this.projectMongoService.findOne({
       query: { _id: projectId },
     });
@@ -277,6 +297,20 @@ export class ProjectsService {
     if (userWithProject) {
       throw new BadRequestException(
         "Project is already present in the user's projects",
+      );
+    }
+
+    //Check if the project is in the user's invited projects
+    const userWithInvitedProject = await this.userMongoService.findOne({
+      query: {
+        email: addMembersDto.email,
+        invitedProjects: { $elemMatch: { project: projectId } },
+      },
+    });
+
+    if (userWithInvitedProject) {
+      throw new BadRequestException(
+        'User has already been invited to join the project.',
       );
     }
 
@@ -297,10 +331,18 @@ export class ProjectsService {
 
     if (!user) {
       //Send the user an invite to email and add the project to the user's waitlisted projects
-      const invite = await sendMail({
+      const invite = await this.mailerService.sendMail({
         to: addMembersDto.email,
+        from: process.env.EMAIL_USERNAME,
         subject: 'Invitation to join a project',
         text: `You have been invited to join the project ${project.name}. Click on the link to join the project.`,
+        html: PROJECT_JOINING_INVITE({
+          invitorEmail,
+          invitorName,
+          inviteeEmail: addMembersDto.email,
+          projectName: project.name,
+          ip: '',
+        }),
       });
 
       const waitlist = await this.waitlistsMongoService.create({

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Waitlists, WaitlistsDocument } from './waitlists-mongo.schema';
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import {
   AddMembersDto,
   ProjectPermissionsDto,
@@ -52,6 +52,41 @@ export class WaitlistsMongoService {
         email: email,
       })
       .exec();
+  }
+
+  async findAll({
+    query,
+    projection,
+  }: {
+    query: any;
+    projection?: any;
+  }): Promise<WaitlistsDocument[]> {
+    return await this.waitlistsModel.find(query, projection).exec();
+  }
+
+  async findAllUnregisteredUsers(projectId: string) {
+    const waitlistedUsers = await this.waitlistsModel.aggregate([
+      { $match: { 'project.project': new Types.ObjectId(projectId) } },
+      { $unwind: '$project' },
+      { $match: { 'project.project': new Types.ObjectId(projectId) } },
+      {
+        $group: {
+          _id: { email: '$email' },
+          name: { $first: 'Unregistered user' },
+          projects: { $push: '$project' },
+        },
+      },
+      {
+        $project: {
+          _id: '',
+          email: '$_id.email',
+          name: 1,
+          projects: 1,
+        },
+      },
+    ]);
+
+    return waitlistedUsers;
   }
 
   async findOneAndDelete({ query }: { query: any }) {

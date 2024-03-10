@@ -53,7 +53,9 @@ export class AuthGuard implements CanActivate {
       const user = await this.userMongoService.findOne({
         query: { _id: userId },
       });
-      request['user'] = { ...user, userId: user?._id };
+      request['user'] = { ...user.toObject(), userId: user?._id };
+      console.log('authgrd', request['user']);
+
       let projectId = request.params.projectId;
       const queryId = request.params.queryId;
 
