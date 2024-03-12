@@ -40,7 +40,11 @@ export const CreateProjectSchema = z.object({
 
 export type Project = z.infer<typeof CreateProjectSchema>;
 
-export default function CreateProjectForm() {
+export default function CreateProjectForm({
+  closeDialog,
+}: {
+  closeDialog?: () => void;
+}) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const jwtToken = useUserToken();
@@ -52,11 +56,32 @@ export default function CreateProjectForm() {
   const createProjectMutation = useMutation({
     mutationFn: createProject,
     onSuccess: ({ data }) => {
+      const projectId = data._id;
       queryClient.invalidateQueries({
         queryKey: ["user/me"],
       });
+      // queryClient.invalidateQueries({
+      //   queryKey: [`${projectId}/query`],
+      // });
+      // queryClient.invalidateQueries({
+      //   queryKey: [`${projectId}/mutation`],
+      // });
+      // queryClient.invalidateQueries({
+      //   queryKey: [`${projectId}/history`],
+      // });
+      // queryClient.invalidateQueries({
+      //   queryKey: [`${projectId}/members`],
+      // });
+      // queryClient.invalidateQueries({
+      //   queryKey: [`${projectId}/project`],
+      // });
+      // localStorage.setItem("projectId", projectId);
       toast.success("Project created successfully");
-      const projectId = data._id;
+      router.refresh();
+      if (closeDialog) {
+        closeDialog();
+      }
+
       router.replace(routes.default(projectId));
     },
     retry: false,

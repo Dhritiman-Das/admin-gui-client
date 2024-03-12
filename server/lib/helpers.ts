@@ -11,11 +11,22 @@ import { InternalServerErrorException } from '@nestjs/common';
 export function generateQuery(
   queryTemplate: string,
   variables: { [key: string]: string },
+  queryDataTypes: Record<string, any>,
 ) {
   let query = queryTemplate;
   for (const key in variables) {
-    query = query.replace(`var(${key})`, `"${variables[key]}"`);
+    const dataType = queryDataTypes[key];
+    console.log('hi this iz me ', { key, dataType });
+    let val: string | number;
+    if (dataType === 'number') {
+      val = parseInt(variables[key]);
+    } else {
+      val = `"${variables[key]}"`;
+    }
+    query = query.replace(`var(${key})`, `${val}`);
   }
+  console.log({ query });
+
   return query;
 }
 

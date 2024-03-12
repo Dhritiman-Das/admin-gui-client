@@ -21,7 +21,8 @@ export function DataTableToolbar<TData>({
           placeholder="Filter history..."
           value={(table.getColumn("query")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
-            console.log(table.getColumn("dbName")?.getFilterValue());
+            // console.log(table.getColumn("dbName")?.getFilterValue());
+            console.log(table.getColumn("query")?.getFilterValue());
 
             table.getColumn("query")?.setFilterValue(event.target.value);
           }}

@@ -21,7 +21,7 @@ export const profileSchema = z.object({
   name: z.string(),
   image: z.string(),
   email: z.string(),
-  createdAt: z.string(),
+  // createdAt: z.string(),
   timeZone: z.string(),
   verified: z.boolean(),
   title: z.string(),
@@ -34,16 +34,7 @@ export const querySchema = z.object({
   dbName: z.string(),
   dbCollectionName: z.string(),
   queryString: z.string(),
-  author: z.object({
-    name: z.string(),
-    image: z.string(),
-    email: z.string(),
-    createdAt: z.string(),
-    timeZone: z.string(),
-    verified: z.boolean(),
-    title: z.string(),
-    _id: z.string(),
-  }),
+  author: profileSchema,
 });
 
 export type Profile = z.infer<typeof profileSchema>;

@@ -16,6 +16,7 @@ import { useMutation } from "@/app/hooks/customMutation";
 import LoadingScreen from "@/components/loadingScreen";
 import ErrorScreen from "@/components/errorScreen";
 import { useUserToken } from "@/app/hooks/useUserToken";
+import LoadingPageWithTables from "@/components/loadingPageWithTables";
 
 export default function page() {
   const queryClient = useQueryClient();
@@ -99,7 +100,7 @@ export default function page() {
       }
     );
   };
-  if (isPending) return <LoadingScreen />;
+  if (isPending) return <LoadingPageWithTables />;
   if (error) return <ErrorScreen error={error} />;
   return (
     <>

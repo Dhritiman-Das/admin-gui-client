@@ -32,10 +32,13 @@ export class Query {
   queryString: string;
 
   @Prop({ default: {}, type: {} })
-  projection?: Document;
+  queryDataTypes: Record<string, any>;
 
   @Prop({ default: {}, type: {} })
-  sort?: Document;
+  projection?: Document;
+
+  @Prop({ type: Object, default: {} })
+  sort?: Record<string, any>;
 
   @Prop({ default: {}, type: {} })
   collation?: Document;

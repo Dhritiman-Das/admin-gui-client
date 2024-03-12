@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import ErrorScreen from "@/components/errorScreen";
 import LoadingScreen from "@/components/loadingScreen";
+import LoadingPageWithTables from "@/components/loadingPageWithTables";
 
 export default function page({ params }: { params: { projectId: string } }) {
   const jwtToken = useUserToken();
@@ -34,7 +35,7 @@ export default function page({ params }: { params: { projectId: string } }) {
       setData(getQueriesData?.data || []);
     }
   }, [isSuccess, getQueriesData?.data]);
-  if (isPending) return <LoadingScreen />;
+  if (isPending) return <LoadingPageWithTables />;
   if (error) return <ErrorScreen error={error} />;
   return (
     <>

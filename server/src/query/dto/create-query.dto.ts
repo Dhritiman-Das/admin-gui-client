@@ -29,6 +29,10 @@ export class CreateQueryDto {
 
   @IsObject()
   @IsOptional()
+  queryDataTypes: Record<string, any>;
+
+  @IsObject()
+  @IsOptional()
   projection: any;
 
   @IsObject()

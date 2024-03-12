@@ -10,6 +10,7 @@ import { getInvitedMembers, getMembers } from "@/routes/project-routes";
 import { useUserInfo } from "@/app/hooks/useUserInfo";
 import LoadingScreen from "@/components/loadingScreen";
 import ErrorScreen from "@/components/errorScreen";
+import LoadingPageWithTables from "@/components/loadingPageWithTables";
 
 export default function ClientComponent({
   params,
@@ -58,7 +59,7 @@ export default function ClientComponent({
       setInvitedMembersList(getInvitedMembersData?.data || []);
     }
   }, [invitedMembersIsSuccess, getInvitedMembersData?.data]);
-  if (isPending) return <LoadingScreen />;
+  if (isPending) return <LoadingPageWithTables />;
   if (error) return <ErrorScreen error={error} />;
   return (
     <>

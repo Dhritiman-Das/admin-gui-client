@@ -36,7 +36,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import BadgedQueries from "@/components/ui/badged-queries";
 import { useMutation } from "@/app/hooks/customMutation";
-import { JSONTree } from "react-json-tree";
+import Editor, { useMonaco } from "@monaco-editor/react";
+import { useTheme } from "next-themes";
 
 export function RunQueryDialog({
   projectId,
@@ -47,6 +48,17 @@ export function RunQueryDialog({
   queryId: string;
   activateBtn: React.ReactNode;
 }) {
+  const { theme, resolvedTheme } = useTheme();
+  const monaco = useMonaco();
+
+  useEffect(() => {
+    // do conditional chaining
+    monaco?.languages.typescript.javascriptDefaults.setEagerModelSync(true);
+    // or make sure that it exists by other ways
+    if (monaco) {
+      console.log("here is the monaco instance:", monaco);
+    }
+  }, [monaco]);
   const queryClient = useQueryClient();
   const jwtToken = useUserToken();
   const [openJsonViewer, setOpenJsonViewer] = useState(false);
@@ -140,20 +152,31 @@ export function RunQueryDialog({
                     key={index}
                     control={form.control}
                     name={field.variable}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{field.name}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={`Enter ${field.name}`}
-                            {...field}
-                            value={field.value || ""}
-                            onChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                      const fieldType =
+                        queryData?.data.queryDataTypes[field.name];
+                      const inputType =
+                        fieldType === "number"
+                          ? "number"
+                          : fieldType === "date"
+                          ? "datetime-local"
+                          : "text";
+                      return (
+                        <FormItem>
+                          <FormLabel>{field.name}</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder={`Enter ${field.name} (${inputType})`}
+                              {...field}
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              type={inputType}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
                   />
                 ))}
                 <DialogFooter>
@@ -171,20 +194,26 @@ export function RunQueryDialog({
       )}
       {openJsonViewer && (
         <DialogContent
-          className={"lg:max-w-screen-lg overflow-y-scroll max-h-screen"}
+          className={"lg:max-w-screen-lg overflow-y-auto max-h-screen"}
         >
           <DialogHeader>
             <DialogTitle>Run query</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <JSONTree
-              data={executeQueryMutation?.data?.data}
-              theme={"harmonic"}
-              shouldExpandNodeInitially={(keyName, data, level) => true}
-              invertTheme={false}
-              labelRenderer={([key]) => <strong>{key}</strong>}
-            />
+            <div className="bg-codeEditor py-3 border-solid border-2 border-muted rounded-[--radius]">
+              <Editor
+                defaultValue={JSON.stringify(
+                  executeQueryMutation?.data?.data,
+                  null,
+                  2
+                )}
+                height={"70vh"}
+                defaultLanguage="json"
+                theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
+                options={{ readOnly: true }}
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button

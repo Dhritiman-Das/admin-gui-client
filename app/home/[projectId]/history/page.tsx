@@ -8,6 +8,7 @@ import { History, columns } from "./columns";
 import { DataTable } from "./data-table";
 import LoadingScreen from "@/components/loadingScreen";
 import ErrorScreen from "@/components/errorScreen";
+import LoadingPageWithTables from "@/components/loadingPageWithTables";
 
 export default function page({ params }: { params: { projectId: string } }) {
   const jwtToken = useUserToken();
@@ -28,7 +29,7 @@ export default function page({ params }: { params: { projectId: string } }) {
       setData(getHistoryData?.data || []);
     }
   }, [isSuccess, getHistoryData?.data]);
-  if (isPending) return <LoadingScreen />;
+  if (isPending) return <LoadingPageWithTables />;
   if (error) return <ErrorScreen error={error} />;
   return (
     <>

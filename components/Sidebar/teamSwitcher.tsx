@@ -36,6 +36,7 @@ import {
 } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
 import { useUserToken } from "@/app/hooks/useUserToken";
+import CreateProjectForm from "@/app/create-project/create-project-form";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -52,7 +53,7 @@ interface TeamSwitcherProps extends PopoverTriggerProps {}
 type Project = {
   project: {
     _id: string;
-    mode: "personal" | "teams";
+    mode: "personal" | "team";
     name: string;
     dbConnectionString: string;
   };
@@ -67,7 +68,7 @@ type Project = {
 };
 type ProjectGroups = {
   personal?: Project[];
-  teams?: Project[];
+  team?: Project[];
 };
 
 function replaceProjectIdInUrl(
@@ -93,7 +94,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
   const jwtToken = useUserToken();
   const [projects, setProjects] = React.useState<Project[]>([]);
   const [projectObject, setProjectObject] = React.useState<ProjectGroups>({
-    teams: [],
+    team: [],
     personal: [],
   });
   const [open, setOpen] = React.useState(false);
@@ -198,7 +199,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                 ))}
               </CommandGroup>
               <CommandGroup heading="Teams">
-                {projectObject.teams?.map((project) => (
+                {projectObject.team?.map((project) => (
                   <CommandItem
                     key={"Project" + project.project._id}
                     onSelect={() => {
@@ -273,27 +274,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
             Add a new project to manage products and customers.
           </DialogDescription>
         </DialogHeader>
-        <div>
-          <div className="space-y-4 py-2 pb-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Project name</Label>
-              <Input id="name" placeholder="Acme Inc." />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="plan">Mongo URI</Label>
-              <Input
-                id="mongoUri"
-                placeholder="mongodb://<username>:<password>@<host>:<port>/<database>"
-              />
-            </div>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setShowNewTeamDialog(false)}>
-            Cancel
-          </Button>
-          <Button type="submit">Continue</Button>
-        </DialogFooter>
+        <CreateProjectForm closeDialog={() => setShowNewTeamDialog(false)} />
       </DialogContent>
     </Dialog>
   );

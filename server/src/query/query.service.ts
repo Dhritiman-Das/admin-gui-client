@@ -95,10 +95,11 @@ export class QueryService {
     dbCollectionName: string;
     queryId: string;
     queryString: string;
+    queryDataTypes: Record<string, any>;
     executeQueryDto: any;
     userId: string;
     projection?: Document;
-    sort?: Document;
+    sort?: Record<string, any>;
     collation?: Document;
   }) {
     const {
@@ -108,13 +109,20 @@ export class QueryService {
       dbCollectionName,
       queryId,
       queryString,
+      queryDataTypes,
       executeQueryDto,
       userId,
       projection,
       sort,
       collation,
     } = items;
-    const query = JSON.parse(generateQuery(queryString, executeQueryDto));
+    console.log(items);
+
+    const query = JSON.parse(
+      generateQuery(queryString, executeQueryDto, queryDataTypes),
+    );
+    console.log({ query });
+
     const client = new MongoClient(dbConnectionString);
     try {
       await client.connect();
@@ -126,9 +134,13 @@ export class QueryService {
       //   plan_val: 'trial',
       //   startDate_val: '1706265858',
       // };
-      console.log({ projection });
+      console.log({ projection, sort });
 
-      const result = await collection.find(query).project(projection).toArray();
+      const result = await collection
+        .find(query)
+        .project(projection)
+        .sort(sort)
+        .toArray();
       await this.historyService.create({
         project: await this.projectMongoService.findOne({
           query: { _id: projectId },
