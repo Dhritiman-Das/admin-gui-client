@@ -87,6 +87,7 @@ export class UserMongoService {
           image: { $first: '$image' },
           name: { $first: '$name' },
           projects: { $push: '$invitedProjects' },
+          status: { $first: 'pending' },
         },
       },
     ]);

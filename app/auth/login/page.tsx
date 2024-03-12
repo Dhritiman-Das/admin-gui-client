@@ -1,17 +1,9 @@
-import { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-
-import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
 import { UserAuthForm } from "@/app/authentication/components/user-auth-form";
 import AppLogo from "@/components/essentials/app-logo";
+import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-
-export const metadata: Metadata = {
-  title: "Authentication",
-  description: "Authentication forms built using the components.",
-};
+import Link from "next/link";
+import React from "react";
 
 export default function page() {
   return (
@@ -20,21 +12,20 @@ export default function page() {
         <AppLogo />
         <div className="flex gap-4 items-center">
           <ModeToggle />
-          <Link href="/auth/login">
-            <Button variant={"ghost"}>Log in</Button>
+          <Link href="/auth/signin">
+            <Button variant={"ghost"}>Sign in</Button>
           </Link>
         </div>
       </nav>
-      <div className="flex h-screen">
-        <div className="w-0 md:w-1/2 bg-secondary"></div>
-        <div className="lg:p-8 p-4 w-full md:w-1/2 flex items-center justify-center">
+      <div className="h-screen w-screen flex items-center justify-center">
+        <div className="lg:p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">
-                Create an account
+                Log in to your account
               </h1>
               <p className="text-sm text-muted-foreground">
-                Enter your email below to create your account
+                Enter your email below to log in to your account
               </p>
             </div>
             <UserAuthForm />

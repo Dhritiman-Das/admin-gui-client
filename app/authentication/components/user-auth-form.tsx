@@ -19,6 +19,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { useSearchParams } from "next/navigation";
+import { set } from "mongoose";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -76,9 +77,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             <Button
               type="submit"
               disabled={isLoading}
-              onClick={() =>
-                signIn("email", { email: form.getValues("email"), callbackUrl })
-              }
+              onClick={async () => {
+                setIsLoading(true);
+                await signIn("email", {
+                  email: form.getValues("email"),
+                  callbackUrl,
+                });
+                setIsLoading(false);
+              }}
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In with Email
@@ -100,7 +106,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         variant="outline"
         type="button"
         disabled={isLoading}
-        onClick={() => signIn("github", { callbackUrl })}
+        onClick={async () => {
+          setIsLoading(true);
+          await signIn("github", { callbackUrl });
+          setIsLoading(false);
+        }}
       >
         {isLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />

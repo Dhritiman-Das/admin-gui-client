@@ -34,6 +34,7 @@ export const memberSchema = z.object({
   email: z.string(),
   image: z.string().optional(),
   projects: z.array(projectSchema),
+  status: z.string().optional(),
 });
 
 export type Member = z.infer<typeof memberSchema>;
@@ -48,6 +49,7 @@ export const columns: ColumnDef<Member>[] = [
       const name = (row.getValue("name") as Member["name"]) || "No Name";
       const image = row.original.image;
       const email = row.original.email;
+      const status = row.original.status;
       return (
         <div className="flex items-center">
           <div className="h-11 w-11 flex-shrink-0">
@@ -61,7 +63,10 @@ export const columns: ColumnDef<Member>[] = [
           </div>
           <div className="ml-4">
             <div className="font-medium">{name}</div>
-            <div className="mt-1 text-muted-foreground">{email}</div>
+            <div className="mt-1 text-muted-foreground flex gap-4">
+              {email}{" "}
+              {status === "pending" && <Badge variant="outline">Invited</Badge>}
+            </div>
           </div>
         </div>
       );

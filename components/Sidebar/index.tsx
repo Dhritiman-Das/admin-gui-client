@@ -18,6 +18,7 @@ import { usePathname } from "next/navigation";
 import { PlanDialog } from "./planDialog";
 import { NotificationDropdown } from "../essentials/notification-dropdown/notificationDropdown";
 import AppLogo from "../essentials/app-logo";
+import { ProfileDropdown } from "./profileDropdown";
 
 type SingleNavigation = {
   name: string;
@@ -79,18 +80,18 @@ export default function Sidebar() {
           icon: Building2,
           current: pathName.includes("project"),
         },
-        {
-          name: "Profile",
-          href: "/home/profile",
-          icon: User,
-          current: pathName.includes("profile"),
-        },
-        {
-          name: "Log out",
-          href: "/api/auth/signout",
-          icon: LogOut,
-          current: false,
-        },
+        // {
+        //   name: "Profile",
+        //   href: "/home/profile",
+        //   icon: User,
+        //   current: pathName.includes("profile"),
+        // },
+        // {
+        //   name: "Log out",
+        //   href: "/api/auth/signout",
+        //   icon: LogOut,
+        //   current: false,
+        // },
       ],
     });
   }, [pathName]);
@@ -140,6 +141,7 @@ export default function Sidebar() {
               <span className="ml-3 flex-1 whitespace-nowrap">{item.name}</span>
             </Link>
           ))}
+          <ProfileDropdown />
         </div>
       </div>
     </aside>

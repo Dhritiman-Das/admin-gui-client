@@ -1,4 +1,5 @@
 import { DatabaseZap } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function AppLogo({
@@ -22,13 +23,15 @@ export default function AppLogo({
   }
 
   return (
-    <div
-      className={`flex items-center gap-2 ml-2 ${
-        size === "sm" ? "text-sm" : size === "lg" ? "text-xl" : ""
-      }`}
-    >
-      <DatabaseZap size={iconSize} />
-      <p className="font-semibold tracking-wider">EasyDB</p>
-    </div>
+    <Link href={"/"}>
+      <div
+        className={`flex items-center gap-2 ml-2 ${
+          size === "sm" ? "text-sm" : size === "lg" ? "text-xl" : ""
+        }`}
+      >
+        <DatabaseZap size={iconSize} />
+        <p className="font-semibold tracking-wider">EasyDB</p>
+      </div>
+    </Link>
   );
 }

@@ -74,6 +74,7 @@ export class WaitlistsMongoService {
           _id: { email: '$email' },
           name: { $first: 'Unregistered user' },
           projects: { $push: '$project' },
+          status: { $first: 'pending' },
         },
       },
       {
@@ -82,6 +83,7 @@ export class WaitlistsMongoService {
           email: '$_id.email',
           name: 1,
           projects: 1,
+          status: 1,
         },
       },
     ]);

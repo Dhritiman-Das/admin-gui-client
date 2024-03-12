@@ -52,39 +52,31 @@ export const authOptions = NextAuth({
       account: Account | null;
       profile?: Profile | undefined;
     }) {
-      console.log("signin Hit");
-      try {
-        const isOAuth = account !== null; // true if OAuth, false if email and password. Change the logic later
-        const email = profile?.email || user?.email;
-        console.log({ user, account, profile, email });
-        if (!!!email) {
-          throw new Error(
-            "The email associated with your authentication account was not found. Please ensure you have a verified email in your authentication account."
-          );
-        }
-        return true;
-        // const response = await checkIfUserExist(email);
-        // if (response && response.data?.userExist === true) {
-        //   user.id = response.data?._id;
-        //   return true;
-        // } else {
-        //   console.log({ profile, user });
-        //   const data = {
-        //     name: profile?.name || "",
-        //     email,
-        //     image: profile?.image || (user?.image as string) || "",
-        //     verified: isOAuth, // true if OAuth, false if email and password
-        //   };
-        //   const response = await createUser(data);
-        //   user.id = response.data?._id;
-        //   return true;
-        // }
-      } catch (error) {
-        console.log({ error });
+      const isOAuth = account !== null; // true if OAuth, false if email and password. Change the logic later
+      const email = profile?.email || user?.email;
+      console.log({ user, account, profile, email });
+      if (!!!email) {
         throw new Error(
-          "An error occurred while trying to sign in. Please try again later."
+          "The email associated with your authentication account was not found. Please ensure you have a verified email in your authentication account."
         );
       }
+      return true;
+      // const response = await checkIfUserExist(email);
+      // if (response && response.data?.userExist === true) {
+      //   user.id = response.data?._id;
+      //   return true;
+      // } else {
+      //   console.log({ profile, user });
+      //   const data = {
+      //     name: profile?.name || "",
+      //     email,
+      //     image: profile?.image || (user?.image as string) || "",
+      //     verified: isOAuth, // true if OAuth, false if email and password
+      //   };
+      //   const response = await createUser(data);
+      //   user.id = response.data?._id;
+      //   return true;
+      // }
     },
     async jwt({
       token,
@@ -132,6 +124,7 @@ export const authOptions = NextAuth({
   pages: {
     error: "/auth/error",
     signIn: "/auth/signin",
+    signOut: "/auth/signout",
     verifyRequest: "/auth/verify-request",
   },
 });
