@@ -7,17 +7,21 @@ import { getSessionFn } from "@/routes/user-routes";
 import LoadingScreen from "@/components/loadingScreen";
 
 export default function Home() {
-  const { data: sessionData, isLoading } = useQuery({
+  const {
+    data: sessionData,
+    isLoading,
+    isFetched,
+  } = useQuery({
     queryKey: ["user/session"],
     queryFn: () => getSessionFn(),
   });
   console.log({ sessionData });
-  if (isLoading) {
-    <LoadingScreen />;
-  }
-  if (!!!sessionData?.data) {
+
+  if (!!!sessionData?.data && !!isFetched) {
     return <LandingPage />;
-  } else {
+  } else if (!!sessionData?.data) {
     return <HomeContent />;
+  } else {
+    return <LoadingScreen />;
   }
 }

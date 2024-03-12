@@ -4,9 +4,6 @@ import {
   createCipheriv,
   createDecipheriv,
 } from 'crypto';
-import nodemailer from 'nodemailer';
-import axios from 'axios';
-import { InternalServerErrorException } from '@nestjs/common';
 
 export function generateQuery(
   queryTemplate: string,
