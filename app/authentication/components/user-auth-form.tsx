@@ -5,7 +5,6 @@ import { signIn, signOut, useSession } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Github, Loader2 } from "lucide-react";
@@ -19,7 +18,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { useSearchParams } from "next/navigation";
-import { set } from "mongoose";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
