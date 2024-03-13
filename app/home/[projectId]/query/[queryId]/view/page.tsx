@@ -2,38 +2,14 @@
 
 import { useUserToken } from "@/app/hooks/useUserToken";
 import ErrorScreen from "@/components/errorScreen";
-import LoadingScreen from "@/components/loadingScreen";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import BadgedQueries from "@/components/ui/badged-queries";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import { getQuery } from "@/routes/project-routes";
 import { useQuery } from "@tanstack/react-query";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useEffect } from "react";
+import { SingleDetail } from "./singleDetails";
 
-export function SingleDetail({
-  header,
-  value,
-  loading,
-}: {
-  header: string;
-  value: React.ReactNode;
-  loading?: boolean;
-}) {
-  return (
-    <>
-      <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-        <dt className="text-sm font-medium leading-6">{header}</dt>
-        <dd className="mt-1 text-sm leading-6 text-muted-foreground sm:col-span-2 sm:mt-0">
-          {loading ? <Skeleton className="h-[20px] w-[150px]" /> : value}
-        </dd>
-      </div>
-      <Separator />
-    </>
-  );
-}
 export default function Page({
   params,
 }: {
