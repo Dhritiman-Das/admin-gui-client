@@ -38,6 +38,7 @@ import BadgedQueries from "@/components/ui/badged-queries";
 import { useMutation } from "@/app/hooks/customMutation";
 import Editor, { useMonaco } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
+import { DateTimePicker } from "@/components/ui/datetime-picker";
 
 export function RunQueryDialog({
   projectId,
@@ -50,6 +51,10 @@ export function RunQueryDialog({
 }) {
   const { theme, resolvedTheme } = useTheme();
   const monaco = useMonaco();
+  const [dateTime, setDateTime] = useState<{
+    date: Date | null;
+    hasTime: boolean;
+  }>({ date: null, hasTime: true });
 
   useEffect(() => {
     // do conditional chaining
@@ -162,16 +167,29 @@ export function RunQueryDialog({
                           ? "datetime-local"
                           : "text";
                       return (
-                        <FormItem>
+                        <FormItem className="flex flex-col">
                           <FormLabel>{field.name}</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder={`Enter ${field.name} (${inputType})`}
-                              {...field}
-                              value={field.value || ""}
-                              onChange={field.onChange}
-                              type={inputType}
-                            />
+                            {inputType === "datetime-local" ? (
+                              <DateTimePicker
+                                value={dateTime}
+                                onChange={(e) => {
+                                  setDateTime((prevState) => ({
+                                    ...prevState,
+                                    date: e.date,
+                                  }));
+                                  field.onChange(e.date.toISOString());
+                                }}
+                              />
+                            ) : (
+                              <Input
+                                placeholder={`Enter ${field.name} (${inputType})`}
+                                {...field}
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                type={inputType}
+                              />
+                            )}
                           </FormControl>
                           <FormMessage />
                         </FormItem>
