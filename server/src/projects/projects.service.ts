@@ -344,6 +344,7 @@ export class ProjectsService {
           inviteeEmail: addMembersDto.email,
           projectName: project.name,
           ip: '',
+          inviteeName: '',
         }),
       });
 
