@@ -84,7 +84,7 @@ export const Columns: ColumnDef<Query>[] = [
     accessorKey: "queryString",
     header: "Query variables",
     cell: ({ row }) => {
-      const queryString = row.getValue("queryString") ?? "";
+      const queryString: string = row.getValue("queryString") ?? "";
       const variables = extractVariables(queryString);
       const displayVariables = variables.slice(0, 2);
       const remainingVariables =

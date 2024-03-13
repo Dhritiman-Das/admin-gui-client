@@ -1,4 +1,4 @@
-import { APP_LOGO, APP_NAME, INVITATIONS_LINK } from 'lib/constants';
+import { APP_LOGO, APP_NAME, INVITATIONS_LINK } from '../constants';
 
 export const PROJECT_JOINING_INVITE = ({
   projectName,
@@ -7,6 +7,13 @@ export const PROJECT_JOINING_INVITE = ({
   inviteeName = '',
   inviteeEmail,
   ip,
+}: {
+  projectName: string;
+  invitorName: string;
+  invitorEmail: string;
+  inviteeName: string;
+  inviteeEmail: string;
+  ip: string;
 }) => `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html dir="ltr" lang="en">
 

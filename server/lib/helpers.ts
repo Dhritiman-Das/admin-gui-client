@@ -27,7 +27,7 @@ export function generateQuery(
   return query;
 }
 
-export function extractVariables(query) {
+export function extractVariables(query: string) {
   const regex = /var\((.*?)\)/g;
   const variables = [];
   let match;
