@@ -185,7 +185,7 @@ export default function EditQueryDialog({
         <DialogHeader>
           <DialogTitle>Edit query</DialogTitle>
           <DialogDescription>
-            Edit your query here. Click save when you're done.
+            Edit your query here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

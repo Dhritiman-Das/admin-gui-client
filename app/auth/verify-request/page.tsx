@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 
-export default function page() {
+export default function Page() {
   const searchParams = useSearchParams();
   const provider = searchParams.get("provider");
   const type = searchParams.get("type");
@@ -36,7 +36,7 @@ export default function page() {
             to sign in.
           </P>
           <P className="font-light text-[12px]">
-            Didn't receive an email? Check your spam folder or{" "}
+            Didn&apos;t receive an email? Check your spam folder or{" "}
             <Link
               href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}`}
               className="hover:underline"

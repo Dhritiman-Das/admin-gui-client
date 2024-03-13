@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import LoadingScreen from "@/components/loadingScreen";
 import { useRouter, usePathname } from "next/navigation";
 
-export default function page({
+export default function Page({
   params,
 }: {
   params: {

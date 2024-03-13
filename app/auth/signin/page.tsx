@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "Authentication forms built using the components.",
 };
 
-export default function page() {
+export default function Page() {
   return (
     <>
       <nav className="py-4 fixed flex items-center justify-between w-screen px-8">

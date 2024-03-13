@@ -39,7 +39,7 @@ export const memberSchema = z.object({
 
 export type Member = z.infer<typeof memberSchema>;
 
-export const columns: ColumnDef<Member>[] = [
+export const Columns: ColumnDef<Member>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (

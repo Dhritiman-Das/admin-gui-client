@@ -2,7 +2,7 @@
 import { H2 } from "@/components/ui/typography";
 import AddQueryDialog from "./addQueryDialog";
 import { DataTable } from "@/app/home/[projectId]/query/data-table";
-import { Query, columns } from "./columns";
+import { Query, Columns } from "./columns";
 import { useQuery } from "@tanstack/react-query";
 import { getQueries } from "@/routes/project-routes";
 import { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ import ErrorScreen from "@/components/errorScreen";
 import LoadingScreen from "@/components/loadingScreen";
 import LoadingPageWithTables from "@/components/loadingPageWithTables";
 
-export default function page({ params }: { params: { projectId: string } }) {
+export default function Page({ params }: { params: { projectId: string } }) {
   const jwtToken = useUserToken();
 
   const {
@@ -46,7 +46,7 @@ export default function page({ params }: { params: { projectId: string } }) {
         <AddQueryDialog projectId={params.projectId} />
       </div>
       <div className="">
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={Columns} data={data} />
       </div>
     </>
   );

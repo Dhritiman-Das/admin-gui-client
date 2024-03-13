@@ -155,7 +155,7 @@ export default function DuplicateQueryDialog({
         <DialogHeader>
           <DialogTitle>Duplicate query</DialogTitle>
           <DialogDescription>
-            Create your query here. Click save when you're done.
+            Create your query here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

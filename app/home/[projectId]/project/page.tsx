@@ -18,7 +18,7 @@ import ErrorScreen from "@/components/errorScreen";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import LoadingPageWithTables from "@/components/loadingPageWithTables";
 
-export default function page() {
+export default function Page() {
   const queryClient = useQueryClient();
   const jwtToken = useUserToken();
   const [project, setProject] = React.useState<Project>();
@@ -48,7 +48,7 @@ export default function page() {
   const toggleEditView = () => setEditView(!editView);
   useEffect(() => {
     setCurrentProjectId(localStorage.getItem("projectId") as string);
-  });
+  }, []);
   useEffect(() => {
     if (response?.status === 200) {
       const {

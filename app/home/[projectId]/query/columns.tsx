@@ -41,30 +41,36 @@ export type Profile = z.infer<typeof profileSchema>;
 
 export type Query = z.infer<typeof querySchema>;
 
-export const columns: ColumnDef<Query>[] = [
+interface NameCellProps {
+  row: any;
+}
+
+const NameCell: React.FC<NameCellProps> = ({ row }) => {
+  const queryId = row.original._id;
+  const name = (row.getValue("name") as Query["name"]) ?? "No Name";
+  const [currentProjectId, setCurrentProjectId] = useState("");
+  useEffect(() => {
+    setCurrentProjectId(localStorage.getItem("projectId") || "");
+  }, []);
+
+  return (
+    <div className="flex space-x-2">
+      <span className="max-w-[500px] truncate font-medium">
+        <Link href={`/home/${currentProjectId}/query/${queryId}/view`}>
+          {name}
+        </Link>
+      </span>
+    </div>
+  );
+};
+
+export const Columns: ColumnDef<Query>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
-    cell: ({ row }) => {
-      const queryId = row.original._id;
-      const name = (row.getValue("name") as Query["name"]) ?? "No Name";
-      const [currentProjectId, setCurrentProjectId] = useState("");
-      useEffect(() => {
-        setCurrentProjectId(localStorage.getItem("projectId") || "");
-      }, []);
-      // const queryId
-      return (
-        <div className="flex space-x-2">
-          <span className="max-w-[500px] truncate font-medium">
-            <Link href={`/home/${currentProjectId}/query/${queryId}/view`}>
-              {name}
-            </Link>
-          </span>
-        </div>
-      );
-    },
+    cell: ({ row }) => <NameCell row={row} />,
   },
   {
     accessorKey: "dbName",

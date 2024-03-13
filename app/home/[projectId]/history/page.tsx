@@ -4,13 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import { getHistory } from "@/routes/history-routes";
-import { History, columns } from "./columns";
+import { History, Columns } from "./columns";
 import { DataTable } from "./data-table";
 import LoadingScreen from "@/components/loadingScreen";
 import ErrorScreen from "@/components/errorScreen";
 import LoadingPageWithTables from "@/components/loadingPageWithTables";
 
-export default function page({ params }: { params: { projectId: string } }) {
+export default function Page({ params }: { params: { projectId: string } }) {
   const jwtToken = useUserToken();
   const {
     isPending,
@@ -39,7 +39,7 @@ export default function page({ params }: { params: { projectId: string } }) {
         </div>
       </div>
       <div className="">
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={Columns} data={data} />
       </div>
     </>
   );

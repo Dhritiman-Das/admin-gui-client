@@ -8,7 +8,7 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-export default function page() {
+export default function Page() {
   const jwtToken = useUserToken();
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);

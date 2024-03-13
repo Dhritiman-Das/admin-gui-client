@@ -3,7 +3,7 @@ import { H2 } from "@/components/ui/typography";
 import React, { useEffect, useState } from "react";
 import AddMembersDialog from "./addMembersDialog";
 import { DataTable } from "./data-table";
-import { Member, columns } from "./columns";
+import { Member, Columns } from "./columns";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import { useQuery } from "@tanstack/react-query";
 import { getInvitedMembers, getMembers } from "@/routes/project-routes";
@@ -71,7 +71,7 @@ export default function ClientComponent({
       </div>
       <div className="">
         <DataTable
-          columns={columns}
+          columns={Columns}
           data={[...membersList, ...invitedMembersList]}
         />
       </div>

@@ -235,7 +235,7 @@ export default function EditProfileDialog({
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
-            Edit your profile here. Click save when you're done.
+            Edit your profile here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

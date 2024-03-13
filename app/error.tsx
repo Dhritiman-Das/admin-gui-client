@@ -3,7 +3,7 @@ import { AuthRequiredError } from "@/lib/exceptions";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-export default function error({ error }: { error: AuthRequiredError }) {
+export default function Error({ error }: { error: AuthRequiredError }) {
   const router = useRouter();
   return (
     <>

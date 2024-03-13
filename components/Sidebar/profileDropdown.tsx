@@ -2,18 +2,11 @@ import {
   ChevronRight,
   Cloud,
   CreditCard,
-  Github,
-  Keyboard,
   LifeBuoy,
   LogOut,
   Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
   Settings,
   User,
-  UserPlus,
-  Users,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -40,6 +33,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { PROFILE_LINK } from "@/server/lib/constants";
 import { Skeleton } from "../ui/skeleton";
+import { Badge } from "../ui/badge";
 
 export function ProfileDropdown() {
   const jwtToken = useUserToken();
@@ -94,6 +88,15 @@ export function ProfileDropdown() {
                 <DropdownMenuItem>
                   <User className="mr-2 h-4 w-4" />
                   <span>Profile</span>
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/home/invitations">
+                <DropdownMenuItem>
+                  <Mail className="mr-2 h-4 w-4" />
+                  <span>Invitations</span>
+                  <DropdownMenuShortcut>
+                    <Badge>4</Badge>
+                  </DropdownMenuShortcut>
                 </DropdownMenuItem>
               </Link>
               <DropdownMenuItem disabled>

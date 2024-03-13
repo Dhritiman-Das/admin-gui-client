@@ -147,7 +147,7 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
         <DialogHeader>
           <DialogTitle>Add query</DialogTitle>
           <DialogDescription>
-            Create your query here. Click save when you're done.
+            Create your query here. Click save when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
 

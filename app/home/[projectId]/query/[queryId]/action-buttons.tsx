@@ -24,23 +24,26 @@ interface SingleButtonProps {
   onClick?: () => void;
 }
 
-const SingleButton = React.forwardRef<HTMLButtonElement, SingleButtonProps>(
-  ({ icon, label, onClick }, ref) => {
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="icon" onClick={onClick} ref={ref}>
-              {icon}
-              <span className="sr-only">{label}</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{label}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
-);
+export const SingleButton = React.forwardRef<
+  HTMLButtonElement,
+  SingleButtonProps
+>(({ icon, label, onClick }, ref) => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="icon" onClick={onClick} ref={ref}>
+            {icon}
+            <span className="sr-only">{label}</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{label}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+});
+
+SingleButton.displayName = "SingleButton";
 
 export default function ActionButtons({
   projectId,

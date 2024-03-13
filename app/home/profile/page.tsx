@@ -8,7 +8,7 @@ import ProfileView from "./profileView";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-export default function page() {
+export default function Page() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

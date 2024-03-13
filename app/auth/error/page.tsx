@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
-export default function () {
+export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");

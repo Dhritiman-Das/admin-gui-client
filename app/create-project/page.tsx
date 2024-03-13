@@ -14,7 +14,7 @@ import AppLogo from "@/components/essentials/app-logo";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { useUserProjects } from "../hooks/useUserProjects";
 
-export default async function page() {
+export default async function Page() {
   const { isPending, error, response } = useUserProjects();
   if (error) return <ErrorScreen error={error} />;
   if (isPending) return <LoadingScreen />;

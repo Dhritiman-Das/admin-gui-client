@@ -35,27 +35,29 @@ export const historySchema = z.object({
 
 export type History = z.infer<typeof historySchema>;
 
-export const columns: ColumnDef<History>[] = [
+const QueryCell = ({ row }: { row: any }) => {
+  const [currentProjectId, setCurrentProjectId] = useState("");
+  useEffect(() => {
+    setCurrentProjectId(localStorage.getItem("projectId") || "");
+  }, []);
+  const query = row.getValue("query") as History["query"];
+
+  return (
+    <div className="flex space-x-2">
+      <span className="max-w-[400px] truncate font-medium">
+        <Link href={`/home/${currentProjectId}/query/${query?._id ?? ""}`}>
+          {query?.name ?? "No Name"}
+        </Link>
+      </span>
+    </div>
+  );
+};
+
+export const Columns: ColumnDef<History>[] = [
   {
     accessorKey: "query",
     header: "Query",
-    cell: ({ row }) => {
-      const [currentProjectId, setCurrentProjectId] = useState("");
-      useEffect(() => {
-        setCurrentProjectId(localStorage.getItem("projectId") || "");
-      }, []);
-      const query = row.getValue("query") as History["query"];
-
-      return (
-        <div className="flex space-x-2">
-          <span className="max-w-[400px] truncate font-medium">
-            <Link href={`/home/${currentProjectId}/query/${query?._id ?? ""}`}>
-              {query?.name ?? "No Name"}
-            </Link>
-          </span>
-        </div>
-      );
-    },
+    cell: ({ row }) => <QueryCell row={row} />,
   },
   {
     accessorKey: "dbName",

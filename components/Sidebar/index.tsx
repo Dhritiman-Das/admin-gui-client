@@ -72,14 +72,14 @@ export default function Sidebar() {
           current: false,
           openComponent: <NotificationDropdown />,
         },
-      ],
-      bottom: [
         {
           name: "Project",
           href: `/home/${localStorage.getItem("projectId")}/project`,
           icon: Building2,
           current: pathName.includes("project"),
         },
+      ],
+      bottom: [
         // {
         //   name: "Profile",
         //   href: "/home/profile",

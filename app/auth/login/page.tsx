@@ -5,7 +5,7 @@ import { ModeToggle } from "@/components/ui/mode-toggle";
 import Link from "next/link";
 import React from "react";
 
-export default function page() {
+export default function Page() {
   return (
     <>
       <nav className="py-4 fixed flex items-center justify-between w-screen px-8">
