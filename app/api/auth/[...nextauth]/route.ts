@@ -18,7 +18,7 @@ import { AdapterUser } from "next-auth/adapters";
 //   userToken?: string;
 // }
 
-export const authOptions = NextAuth({
+const authOptions = NextAuth({
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID as string,
