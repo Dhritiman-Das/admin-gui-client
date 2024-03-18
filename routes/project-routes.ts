@@ -1,4 +1,5 @@
 import { Project } from "@/app/create-project/create-project-form";
+import { QueryDataTypes } from "@/app/home/[projectId]/query/addQueryDialog";
 import axios from "axios";
 
 const axiosInstance = axios.create({
@@ -72,6 +73,7 @@ export const createQuery = async ({
   query: {
     name: string;
     queryString: string;
+    queryDataTypes?: Record<string, QueryDataTypes>;
     projection?: string;
     sort?: string;
     collation?: string;
@@ -104,6 +106,7 @@ export const editQuery = async ({
   query: {
     name: string;
     queryString: string;
+    queryDataTypes?: Record<string, QueryDataTypes>;
     dbName: string;
     dbCollectionName: string;
     projection?: string;

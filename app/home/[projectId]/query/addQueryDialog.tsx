@@ -45,7 +45,7 @@ import { useMutation } from "@/app/hooks/customMutation";
 import Editor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 
-type QueryDataTypes = "string" | "number" | "boolean" | "date";
+export type QueryDataTypes = "string" | "number" | "boolean" | "date";
 
 export const AddQueryFormSchema = z.object({
   name: z.string().min(2, {
@@ -266,18 +266,11 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
                         height="100px"
                         defaultLanguage="json"
                         theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
-                        defaultValue={`// { "plan": var(planName), "startDate": {"$gte": var(startDate)} }`}
+                        defaultValue={`// { "plan": "__planName__", "startDate": {"$gte": "__startDate__"} }`}
                         onChange={field.onChange}
                       />
                     </div>
                   </FormControl>
-                  {/* <div>
-                    {variables.map((variable, index) => (
-                      <Badge key={index} className="mr-2">
-                        {variable.variable}
-                      </Badge>
-                    ))}
-                  </div> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -332,7 +325,7 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
                     <div className="bg-codeEditor py-3 border-solid border-2 border-muted rounded-[--radius]">
                       <Editor
                         {...field}
-                        height="100px"
+                        height="60px"
                         defaultLanguage="json"
                         theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
                         defaultValue={``}
@@ -354,7 +347,7 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
                     <div className="bg-codeEditor py-3 border-solid border-2 border-muted rounded-[--radius]">
                       <Editor
                         {...field}
-                        height="100px"
+                        height="60px"
                         defaultLanguage="json"
                         theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
                         defaultValue={``}
@@ -366,7 +359,7 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="collation"
               render={({ field }) => (
@@ -387,7 +380,7 @@ export default function AddQueryDialog({ projectId }: { projectId: string }) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               control={form.control}

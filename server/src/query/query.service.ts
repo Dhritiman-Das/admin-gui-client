@@ -118,9 +118,7 @@ export class QueryService {
     } = items;
     console.log(items);
 
-    const query = JSON.parse(
-      generateQuery(queryString, executeQueryDto, queryDataTypes),
-    );
+    const query = generateQuery(queryString, executeQueryDto, queryDataTypes);
     console.log({ query });
 
     const client = new MongoClient(dbConnectionString);

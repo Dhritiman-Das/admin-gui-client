@@ -158,8 +158,11 @@ export function RunQueryDialog({
                     control={form.control}
                     name={field.variable}
                     render={({ field }) => {
-                      const fieldType =
-                        queryData?.data.queryDataTypes[field.name];
+                      console.log({ field, queryData });
+
+                      const fieldType = queryData?.data?.queryDataTypes
+                        ? queryData?.data?.queryDataTypes[field.name]
+                        : "string";
                       const inputType =
                         fieldType === "number"
                           ? "number"

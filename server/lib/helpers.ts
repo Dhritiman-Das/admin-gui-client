@@ -7,28 +7,55 @@ import {
 
 export function generateQuery(
   queryTemplate: string,
-  variables: { [key: string]: string },
-  queryDataTypes: Record<string, any>,
-) {
-  let query = queryTemplate;
-  for (const key in variables) {
-    const dataType = queryDataTypes[key];
-    console.log('hi this iz me ', { key, dataType });
-    let val: string | number;
-    if (dataType === 'number') {
-      val = parseInt(variables[key]);
-    } else {
-      val = `"${variables[key]}"`;
-    }
-    query = query.replace(`var(${key})`, `${val}`);
-  }
-  console.log({ query });
+  variables: Record<string, string>,
+  queryDataTypes: Record<string, string>,
+): any {
+  // Parse the query template string into an object
+  const queryObj = JSON.parse(
+    queryTemplate.replace(/var\((\w+)\)/g, '"__$1__"'),
+  );
 
-  return query;
+  // Process the object as before
+  return processQueryObj(queryObj, variables, queryDataTypes);
+}
+
+function processQueryObj(
+  queryObj: any,
+  variables: Record<string, string>,
+  queryDataTypes: Record<string, string>,
+): any {
+  if (typeof queryObj === 'string') {
+    const match = queryObj.match(/__([^_]+)__/);
+    if (match) {
+      const varName = match[1];
+      const dataType = queryDataTypes[varName] || 'string';
+      let value: string | number | boolean | Date;
+
+      if (dataType === 'number') {
+        value = Number(variables[varName]);
+      } else if (dataType === 'boolean') {
+        value = variables[varName] === 'true';
+      } else if (dataType === 'date') {
+        value = new Date(variables[varName]);
+      } else {
+        value = variables[varName];
+      }
+
+      return value;
+    }
+  } else if (typeof queryObj === 'object' && queryObj !== null) {
+    const newObj: any = Array.isArray(queryObj) ? [] : {};
+    for (const key in queryObj) {
+      newObj[key] = processQueryObj(queryObj[key], variables, queryDataTypes);
+    }
+    return newObj;
+  }
+
+  return queryObj;
 }
 
 export function extractVariables(query: string) {
-  const regex = /var\((.*?)\)/g;
+  const regex = /"__(.*?)__"/g;
   const variables = [];
   let match;
 
@@ -41,7 +68,6 @@ export function extractVariables(query: string) {
 
   return variables;
 }
-
 export function capitalizeFirstChar(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }

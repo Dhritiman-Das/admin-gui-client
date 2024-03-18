@@ -27,7 +27,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { extractVariables } from "@/server/lib/helpers";
+import { extractVariables, safeJsonParse } from "@/server/lib/helpers";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -41,9 +41,11 @@ import { createQuery, getDbDetails, getQuery } from "@/routes/project-routes";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useUserToken } from "@/app/hooks/useUserToken";
-import { AddQueryFormSchema } from "./addQueryDialog";
+import { AddQueryFormSchema, QueryDataTypes } from "./addQueryDialog";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@/app/hooks/customMutation";
+import { Editor } from "@monaco-editor/react";
+import { useTheme } from "next-themes";
 
 export default function DuplicateQueryDialog({
   queryId,
@@ -54,6 +56,7 @@ export default function DuplicateQueryDialog({
   projectId: string;
   activateBtn: React.ReactNode;
 }) {
+  const { resolvedTheme } = useTheme();
   const queryClient = useQueryClient();
   const router = useRouter();
   const currentProjectId = projectId;
@@ -65,6 +68,10 @@ export default function DuplicateQueryDialog({
     dbName: string;
     dbCollectionName: string;
     queryString: string;
+    queryDataTypes: Record<string, QueryDataTypes>;
+    projection: string;
+    sort: string;
+    collation: string;
   }>();
   const form = useForm<z.infer<typeof AddQueryFormSchema>>({
     resolver: zodResolver(AddQueryFormSchema),
@@ -74,6 +81,10 @@ export default function DuplicateQueryDialog({
       dbName: "",
       dbCollectionName: "",
       queryString: "",
+      queryDataTypes: {},
+      projection: "",
+      sort: "",
+      collation: "",
     },
   });
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -138,20 +149,37 @@ export default function DuplicateQueryDialog({
     form.setValue("dbName", data?.dbName || "");
     form.setValue("dbCollectionName", data?.dbCollectionName || "");
     form.setValue("queryString", data?.queryString || "");
+    form.setValue("queryDataTypes", data?.queryDataTypes || {});
+    form.setValue(
+      "projection",
+      data?.projection ? JSON.stringify(data?.projection) : ""
+    );
+    form.setValue("sort", data?.sort ? JSON.stringify(data?.sort) : "");
+    form.setValue(
+      "collation",
+      data?.collation ? JSON.stringify(data?.collation) : ""
+    );
   }, [data]);
 
   function onSubmit(data: z.infer<typeof AddQueryFormSchema>) {
     console.log(data);
     createQueryMutation.mutate({
       projectId: currentProjectId,
-      query: data,
+      query: {
+        ...data,
+        projection: safeJsonParse(data?.projection),
+        sort: safeJsonParse(data?.sort),
+        collation: safeJsonParse(data?.collation),
+      },
       token: jwtToken as string,
     });
   }
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>{activateBtn}</DialogTrigger>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent
+        className={"lg:max-w-screen-lg overflow-y-scroll max-h-screen"}
+      >
         <DialogHeader>
           <DialogTitle>Duplicate query</DialogTitle>
           <DialogDescription>
@@ -269,20 +297,100 @@ export default function DuplicateQueryDialog({
                 <FormItem>
                   <FormLabel>Query</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={`{ "plan": "trial", "startDate": {"$gte": "1706265858"} }`}
-                      {...field}
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <div className="bg-codeEditor py-3 border-solid border-2 border-muted rounded-[--radius]">
+                      <Editor
+                        height="100px"
+                        defaultLanguage="json"
+                        theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
+                        defaultValue={field.value}
+                        onChange={field.onChange}
+                      />
+                    </div>
                   </FormControl>
-                  <div>
-                    {variables.map((variable, index) => (
-                      <Badge key={"Badge" + index} className="mr-2">
-                        {variable.variable}
-                      </Badge>
-                    ))}
-                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex gap-4">
+              {variables.map((variable, index) => (
+                <>
+                  <FormItem
+                    key={"queryDataType" + index}
+                    className="flex items-center gap-2"
+                  >
+                    <FormLabel>{variable.variable}</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={
+                          form.watch(`queryDataTypes.${variable.variable}`) ||
+                          "string"
+                        }
+                        onValueChange={(value: QueryDataTypes) =>
+                          form.setValue(
+                            `queryDataTypes.${variable.variable}`,
+                            value
+                          )
+                        }
+                      >
+                        <SelectTrigger className="w-fit">
+                          <SelectValue placeholder="Select a data type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["string", "number", "boolean", "date"].map(
+                            (dataType, index) => (
+                              <SelectItem value={dataType} key={index}>
+                                {dataType}
+                              </SelectItem>
+                            )
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </>
+              ))}
+            </div>
+            <FormField
+              control={form.control}
+              name="projection"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project</FormLabel>
+                  <FormControl>
+                    <div className="bg-codeEditor py-3 border-solid border-2 border-muted rounded-[--radius]">
+                      <Editor
+                        {...field}
+                        height="60px"
+                        defaultLanguage="json"
+                        theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
+                        defaultValue={field.value}
+                        onChange={field.onChange}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="sort"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sort</FormLabel>
+                  <FormControl>
+                    <div className="bg-codeEditor py-3 border-solid border-2 border-muted rounded-[--radius]">
+                      <Editor
+                        {...field}
+                        height="60px"
+                        defaultLanguage="json"
+                        theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
+                        defaultValue={field.value}
+                        onChange={field.onChange}
+                      />
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

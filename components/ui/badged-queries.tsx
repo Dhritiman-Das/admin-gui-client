@@ -6,16 +6,16 @@ export default function BadgedQueries({
 }: {
   inputString: string;
 }) {
-  // Regular expression to find 'var(value)' in the string
-  const regex = /var\(([^)]+)\)/g;
+  // Regular expression to find '__value__' in the string
+  const regex = /"__(.*?)__"/g;
 
   // Split the string into parts
   const parts = inputString.split(regex);
 
-  // Map over the parts and replace 'var(value)' with <Badge>{value}</Badge>
+  // Map over the parts and replace '__value__' with <Badge>{value}</Badge>
   const elements = parts.map((part, index) => {
     if (index % 2 === 1) {
-      // If the index is odd, this part is a 'value' from 'var(value)'
+      // If the index is odd, this part is a 'value' from '__value__'
       return (
         <Badge variant={"outline"} key={index}>
           {part}

@@ -48,8 +48,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useUserToken } from "@/app/hooks/useUserToken";
-import { AddQueryFormSchema } from "./addQueryDialog";
+import { AddQueryFormSchema, QueryDataTypes } from "./addQueryDialog";
 import { useMutation } from "@/app/hooks/customMutation";
+import { Editor } from "@monaco-editor/react";
+import { useTheme } from "next-themes";
 
 export default function EditQueryDialog({
   queryId,
@@ -60,6 +62,7 @@ export default function EditQueryDialog({
   projectId: string;
   activateBtn: React.ReactNode;
 }) {
+  const { resolvedTheme } = useTheme();
   const queryClient = useQueryClient();
   const currentProjectId = projectId;
   const jwtToken = useUserToken();
@@ -70,6 +73,7 @@ export default function EditQueryDialog({
     dbName: string;
     dbCollectionName: string;
     queryString: string;
+    queryDataTypes: Record<string, QueryDataTypes>;
     projection: string;
     sort: string;
     collation: string;
@@ -82,6 +86,7 @@ export default function EditQueryDialog({
       dbName: "",
       dbCollectionName: "",
       queryString: "",
+      queryDataTypes: {},
       projection: "",
       sort: "",
       collation: "",
@@ -151,6 +156,7 @@ export default function EditQueryDialog({
     form.setValue("dbName", data?.dbName || "");
     form.setValue("dbCollectionName", data?.dbCollectionName || "");
     form.setValue("queryString", data?.queryString || "");
+    form.setValue("queryDataTypes", data?.queryDataTypes || {});
     form.setValue(
       "projection",
       data?.projection ? JSON.stringify(data?.projection) : ""
@@ -299,24 +305,60 @@ export default function EditQueryDialog({
                 <FormItem>
                   <FormLabel>Query</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={`{ "plan": "trial", "startDate": {"$gte": "1706265858"} }`}
-                      {...field}
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <div className="bg-codeEditor py-3 border-solid border-2 border-muted rounded-[--radius]">
+                      <Editor
+                        height="100px"
+                        defaultLanguage="json"
+                        theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
+                        defaultValue={field.value}
+                        onChange={field.onChange}
+                      />
+                    </div>
                   </FormControl>
-                  <div>
-                    {variables.map((variable, index) => (
-                      <Badge key={"Badge" + index} className="mr-2">
-                        {variable.variable}
-                      </Badge>
-                    ))}
-                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <div className="flex gap-4">
+              {variables.map((variable, index) => (
+                <>
+                  <FormItem
+                    key={"queryDataType" + index}
+                    className="flex items-center gap-2"
+                  >
+                    <FormLabel>{variable.variable}</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={
+                          form.watch(`queryDataTypes.${variable.variable}`) ||
+                          "string"
+                        }
+                        onValueChange={(value: QueryDataTypes) =>
+                          form.setValue(
+                            `queryDataTypes.${variable.variable}`,
+                            value
+                          )
+                        }
+                      >
+                        <SelectTrigger className="w-fit">
+                          <SelectValue placeholder="Select a data type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["string", "number", "boolean", "date"].map(
+                            (dataType, index) => (
+                              <SelectItem value={dataType} key={index}>
+                                {dataType}
+                              </SelectItem>
+                            )
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </>
+              ))}
+            </div>
             <FormField
               control={form.control}
               name="projection"
@@ -324,12 +366,16 @@ export default function EditQueryDialog({
                 <FormItem>
                   <FormLabel>Project</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={`{ field: 0 }`}
-                      {...field}
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <div className="bg-codeEditor py-3 border-solid border-2 border-muted rounded-[--radius]">
+                      <Editor
+                        {...field}
+                        height="60px"
+                        defaultLanguage="json"
+                        theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
+                        defaultValue={field.value}
+                        onChange={field.onChange}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -342,18 +388,22 @@ export default function EditQueryDialog({
                 <FormItem>
                   <FormLabel>Sort</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={`{ field: -1 } or [[field, -1]]`}
-                      {...field}
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
+                    <div className="bg-codeEditor py-3 border-solid border-2 border-muted rounded-[--radius]">
+                      <Editor
+                        {...field}
+                        height="60px"
+                        defaultLanguage="json"
+                        theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
+                        defaultValue={field.value}
+                        onChange={field.onChange}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="collation"
               render={({ field }) => (
@@ -370,7 +420,7 @@ export default function EditQueryDialog({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="description"
