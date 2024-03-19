@@ -16,6 +16,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from 'src/decorators/public.decorator';
 import { Project } from 'src/mongo/project-mongo/project-mongo.schema';
 import { decryptData } from 'lib/helpers';
+import { RequestWithUser } from 'types/request';
+import { CheckAbility } from 'src/casl/abilities.decorator';
+import { Action } from 'src/casl/casl-ability.factory';
 
 @Controller('users')
 export class UsersController {
@@ -75,12 +78,39 @@ export class UsersController {
       );
     }
 
-    return user;
+    const { invitedProjects, ...userWithoutInvitedProjects } = user.toObject();
+
+    return {
+      ...userWithoutInvitedProjects,
+      invitedProjectsLength: user.invitedProjects?.length || 0,
+    };
   }
 
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('projects/invites')
+  async getInvitedProjects(@Req() req: RequestWithUser) {
+    const userId = req.user.userId;
+    return this.usersService.getInvitedProjects(userId);
+  }
+
+  @Patch('projects/invites/:projectId')
+  @CheckAbility({
+    action: Action.Update,
+    subject: Project,
+    allowPersonNotInProject: true,
+  })
+  async handleProjectInvite(
+    @Body() body: { accept: boolean },
+    @Req() req: RequestWithUser,
+    @Param('projectId') projectId: string,
+  ) {
+    const userId = req.user.userId;
+    const accept = body.accept;
+    return this.usersService.handleProjectInvite(userId, projectId, accept);
   }
 
   @Get(':id')

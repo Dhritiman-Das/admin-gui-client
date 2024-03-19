@@ -4,6 +4,7 @@ import { Action, Subjects } from './casl-ability.factory';
 export interface RequiredRule {
   action: Action;
   subject: Subjects;
+  allowPersonNotInProject?: boolean;
 }
 
 export const CHECK_ABILITY = 'check_ability';

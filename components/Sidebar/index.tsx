@@ -79,20 +79,7 @@ export default function Sidebar() {
           current: pathName.includes("project"),
         },
       ],
-      bottom: [
-        // {
-        //   name: "Profile",
-        //   href: "/home/profile",
-        //   icon: User,
-        //   current: pathName.includes("profile"),
-        // },
-        // {
-        //   name: "Log out",
-        //   href: "/api/auth/signout",
-        //   icon: LogOut,
-        //   current: false,
-        // },
-      ],
+      bottom: [],
     });
   }, [pathName]);
   return (
@@ -125,7 +112,7 @@ export default function Sidebar() {
             item.openComponent
           ) : null
         )}
-        <div className="mt-auto flex flex-col">
+        <div className="mt-auto flex flex-col gap-1">
           <PlanDialog />
           {navigation.bottom.map((item, index) => (
             <Link

@@ -42,6 +42,10 @@ export class UserMongoService {
       });
   }
 
+  async aggregate(pipeline: any) {
+    return await this.userModel.aggregate(pipeline);
+  }
+
   async findOne({
     query,
     projection,

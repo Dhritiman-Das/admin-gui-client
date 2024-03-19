@@ -44,6 +44,15 @@ export const getUserInfo = async (token: string) => {
   return response;
 };
 
+export const getUserProjectInvites = async (token: string) => {
+  const response = await axiosInstance.get("users/projects/invites", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
+};
+
 export const updateUser = async ({
   token,
   user,
@@ -56,6 +65,27 @@ export const updateUser = async ({
       Authorization: `Bearer ${token}`,
     },
   });
+  return response;
+};
+
+export const handleProjectInvite = async ({
+  token,
+  projectId,
+  accept,
+}: {
+  token: string;
+  projectId: string;
+  accept: boolean;
+}) => {
+  const response = await axiosInstance.patch(
+    `users/projects/invites/${projectId}`,
+    { accept },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response;
 };
 

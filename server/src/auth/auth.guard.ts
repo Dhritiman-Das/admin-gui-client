@@ -45,6 +45,8 @@ export class AuthGuard implements CanActivate {
     const rules =
       this.reflector.get<RequiredRule[]>(CHECK_ABILITY, context.getHandler()) ||
       [];
+    console.log({ rules });
+
     try {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET_KEY,
@@ -60,6 +62,7 @@ export class AuthGuard implements CanActivate {
       const queryId = request.params.queryId;
 
       let isOwner = false;
+      let allowPersonNotInProject = false;
 
       if (queryId) {
         const query = await this.queryMongoService.findOne({
@@ -68,7 +71,14 @@ export class AuthGuard implements CanActivate {
         projectId = query.project;
         isOwner = query.author.toString() === userId;
       }
-      if (!projectId) {
+      for (const rule of rules) {
+        if (rule.allowPersonNotInProject) {
+          allowPersonNotInProject = true;
+          break;
+        }
+      }
+
+      if (!!!projectId || !!allowPersonNotInProject) {
         return true;
       }
       const ability = this.caslAbilityFactory.createForUser(

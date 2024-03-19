@@ -45,7 +45,14 @@ const resourceMap = {
 
 @Injectable()
 export class CaslAbilityFactory {
-  createForUser(user: User, projectId: Types.ObjectId, isOwner: boolean) {
+  createForUser(
+    user: User,
+    projectId: Types.ObjectId,
+    isOwner: boolean,
+    allowPersonNotInProject: boolean = false,
+  ) {
+    console.log({ hellohello: allowPersonNotInProject });
+
     const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
     let hasMatchingProject = false;
 
@@ -73,7 +80,7 @@ export class CaslAbilityFactory {
       }
     });
 
-    if (!hasMatchingProject) {
+    if (!!!hasMatchingProject && !!!allowPersonNotInProject) {
       throw new UnauthorizedException('User not authorized for this project');
     }
 

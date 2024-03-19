@@ -18,7 +18,7 @@ import { QueryService } from 'src/query/query.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateQueryDto } from 'src/query/dto/create-query.dto';
 import { AddMembersDto } from './dto/add-members.dto';
-import { Action, CaslAbilityFactory } from 'src/casl/casl-ability.factory';
+import { Action } from 'src/casl/casl-ability.factory';
 import { CheckAbility } from 'src/casl/abilities.decorator';
 import { Project } from 'src/mongo/project-mongo/project-mongo.schema';
 import { Query } from 'src/mongo/query-mongo/query-mongo.schema';
@@ -32,7 +32,6 @@ export class ProjectsController {
   constructor(
     private readonly projectsService: ProjectsService,
     private readonly queryService: QueryService,
-    private abilityFactory: CaslAbilityFactory,
   ) {}
 
   @Post()

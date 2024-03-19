@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserMongoService } from 'src/mongo/user-mongo/user-mongo.service';
 import { ProjectsService } from 'src/projects/projects.service';
 import { WaitlistsMongoService } from 'src/mongo/waitlists-mongo/waitlists-mongo.service';
+import { User, UserDocument } from 'src/mongo/user-mongo/user-mongo.schema';
 
 @Injectable()
 export class UsersService {
@@ -74,7 +75,7 @@ export class UsersService {
     query: any;
     projection?: any;
     populate?: any;
-  }) {
+  }): Promise<UserDocument> {
     return await this.userMongoService.findOne({
       query,
       projection,
@@ -98,5 +99,69 @@ export class UsersService {
     return await this.userMongoService.findOne({
       query: { email },
     });
+  }
+
+  async getInvitedProjects(userId: User) {
+    const user = await this.findOne({
+      query: { _id: userId },
+      projection: { invitedProjects: 1 },
+      populate: {
+        path: 'invitedProjects',
+        populate: {
+          path: 'project',
+          select: 'name mode',
+          model: 'Project',
+        },
+      },
+    });
+    return user.invitedProjects;
+  }
+
+  async handleProjectInvite(userId: User, projectId: string, accept: boolean) {
+    if (!userId || !projectId || typeof accept !== 'boolean') {
+      throw new Error('Invalid parameters');
+    }
+
+    try {
+      if (accept) {
+        const user = await this.userMongoService.findOne({
+          query: {
+            _id: userId,
+            'invitedProjects.project': projectId,
+          },
+        });
+        const project = user?.invitedProjects.find(
+          (invitedProject) => invitedProject.project.toString() === projectId,
+        );
+
+        if (!!!user || !!!project) {
+          throw new Error('User not invited to this project');
+        }
+
+        return this.userMongoService.findOneAndUpdate({
+          query: { _id: userId },
+          update: {
+            $push: { projects: project },
+            $pull: { invitedProjects: { project: projectId } },
+          },
+          options: {
+            new: true,
+          },
+        });
+      } else {
+        return this.userMongoService.findOneAndUpdate({
+          query: { _id: userId },
+          update: {
+            $pull: {
+              invitedProjects: { project: projectId },
+            },
+          },
+          options: { new: true },
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error handling project invite');
+    }
   }
 }

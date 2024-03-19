@@ -95,7 +95,7 @@ export function ProfileDropdown() {
                   <Mail className="mr-2 h-4 w-4" />
                   <span>Invitations</span>
                   <DropdownMenuShortcut>
-                    <Badge>4</Badge>
+                    <Badge>{userQuery?.data?.invitedProjectsLength ?? 0}</Badge>
                   </DropdownMenuShortcut>
                 </DropdownMenuItem>
               </Link>
