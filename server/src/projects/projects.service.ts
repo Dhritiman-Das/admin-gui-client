@@ -288,6 +288,21 @@ export class ProjectsService {
       query: { _id: projectId },
     });
 
+    await this.mailerService.sendMail({
+      to: addMembersDto.email,
+      from: process.env.EMAIL_FROM,
+      subject: 'Invitation to join a project',
+      text: `You have been invited to join the project ${project.name}. Click on the link to join the project.`,
+      html: PROJECT_JOINING_INVITE({
+        invitorEmail,
+        invitorName,
+        inviteeEmail: addMembersDto.email,
+        projectName: project.name,
+        ip: '',
+        inviteeName: '',
+      }),
+    });
+
     // Check if the project is already present in the user's projects
     const userWithProject = await this.userMongoService.findOne({
       query: {
@@ -331,23 +346,22 @@ export class ProjectsService {
       },
     });
 
+    //Send the user an invite to email and add the project to the user's waitlisted projects
+    const invite = await this.mailerService.sendMail({
+      to: addMembersDto.email,
+      from: process.env.EMAIL_FROM,
+      subject: 'Invitation to join a project',
+      text: `You have been invited to join the project ${project.name}. Click on the link to join the project.`,
+      html: PROJECT_JOINING_INVITE({
+        invitorEmail,
+        invitorName,
+        inviteeEmail: addMembersDto.email,
+        projectName: project.name,
+        ip: '',
+        inviteeName: '',
+      }),
+    });
     if (!user) {
-      //Send the user an invite to email and add the project to the user's waitlisted projects
-      const invite = await this.mailerService.sendMail({
-        to: addMembersDto.email,
-        from: process.env.EMAIL_USERNAME,
-        subject: 'Invitation to join a project',
-        text: `You have been invited to join the project ${project.name}. Click on the link to join the project.`,
-        html: PROJECT_JOINING_INVITE({
-          invitorEmail,
-          invitorName,
-          inviteeEmail: addMembersDto.email,
-          projectName: project.name,
-          ip: '',
-          inviteeName: '',
-        }),
-      });
-
       const waitlist = await this.waitlistsMongoService.create({
         email: addMembersDto.email,
         projectPermissions: {
