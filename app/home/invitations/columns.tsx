@@ -1,6 +1,6 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import { z } from "zod";
 import { capitalizeFirstChar } from "@/server/lib/helpers";
@@ -19,6 +19,56 @@ import { handleProjectInvite } from "@/routes/user-routes";
 import { useMutation } from "@/app/hooks/customMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+const ActionCell = ({ row }: { row: Row<ProjectInvite> }) => {
+  const queryClient = useQueryClient();
+  const jwtToken = useUserToken();
+  const projectId = row.original.project._id;
+  const handleInviteMutation = useMutation({
+    mutationFn: handleProjectInvite,
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["user/projects/invited", jwtToken as string],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["user/me", jwtToken as string],
+      });
+      toast.success(
+        variables.accept ? "Invitation accepted" : "Invitation rejected"
+      );
+    },
+  });
+  return (
+    <div className="flex gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={async () => {
+          handleInviteMutation.mutate({
+            token: jwtToken,
+            accept: true,
+            projectId,
+          });
+        }}
+      >
+        Accept
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={async () => {
+          handleInviteMutation.mutate({
+            token: jwtToken,
+            accept: false,
+            projectId,
+          });
+        }}
+      >
+        Reject
+      </Button>
+    </div>
+  );
+};
 
 export const projectSchema = z.object({
   _id: z.string(),
@@ -107,55 +157,7 @@ export const Columns: ColumnDef<ProjectInvite>[] = [
   {
     accessorKey: "actionBtns",
     header: "Actions",
-    cell: ({ row }) => {
-      const queryClient = useQueryClient();
-      const jwtToken = useUserToken();
-      const projectId = row.original.project._id;
-      const handleInviteMutation = useMutation({
-        mutationFn: handleProjectInvite,
-        onSuccess: (data, variables) => {
-          queryClient.invalidateQueries({
-            queryKey: ["user/projects/invited", jwtToken as string],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["user/me", jwtToken as string],
-          });
-          toast.success(
-            variables.accept ? "Invitation accepted" : "Invitation rejected"
-          );
-        },
-      });
-      return (
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={async () => {
-              handleInviteMutation.mutate({
-                token: jwtToken,
-                accept: true,
-                projectId,
-              });
-            }}
-          >
-            Accept
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={async () => {
-              handleInviteMutation.mutate({
-                token: jwtToken,
-                accept: false,
-                projectId,
-              });
-            }}
-          >
-            Reject
-          </Button>
-        </div>
-      );
-    },
+    cell: ({ row }) => <ActionCell row={row} />,
   },
   // {
   //   id: "actions",

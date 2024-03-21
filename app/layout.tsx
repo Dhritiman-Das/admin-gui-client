@@ -19,16 +19,7 @@ export const metadata: Metadata = {
   title: "EasyDB",
   description: "The no nonsense database access tool",
   icons: {
-    icon: [
-      {
-        url: "/database-zap-light.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/database-zap-dark.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-    ],
+    icon: "/app-logo.png",
   },
   verification: { google: "11fvDahTCcb6CXTP5sJpERfxESJ7yS4NxEe2DePY1ME" },
 };
