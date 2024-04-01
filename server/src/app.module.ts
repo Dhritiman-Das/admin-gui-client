@@ -23,6 +23,9 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { NotificationsMongoService } from './mongo/notifications-mongo/notifications-mongo.service';
 import { NotificationsMongoModule } from './mongo/notifications-mongo/notifications-mongo.module';
 import { WaitlistsMongoModule } from './mongo/waitlists-mongo/waitlists-mongo.module';
+import { MutationModule } from './mutation/mutation.module';
+import { MutationMongoService } from './mongo/mutation-mongo/mutation-mongo.service';
+import { MutationMongoModule } from './mongo/mutation-mongo/mutation-mongo.module';
 
 @Module({
   imports: [
@@ -55,6 +58,8 @@ import { WaitlistsMongoModule } from './mongo/waitlists-mongo/waitlists-mongo.mo
     NotificationsModule,
     NotificationsMongoModule,
     WaitlistsMongoModule,
+    MutationModule,
+    MutationMongoModule,
   ],
   controllers: [AppController],
   providers: [
@@ -62,6 +67,7 @@ import { WaitlistsMongoModule } from './mongo/waitlists-mongo/waitlists-mongo.mo
     UserMongoService,
     ProjectMongoService,
     NotificationsMongoService,
+    MutationMongoService,
   ],
 })
 export class AppModule implements NestModule {

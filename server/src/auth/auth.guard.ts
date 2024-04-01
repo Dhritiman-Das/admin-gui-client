@@ -48,6 +48,7 @@ export class AuthGuard implements CanActivate {
     console.log({ rules });
 
     try {
+      console.log('Bout to go in');
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET_KEY,
       });
@@ -81,6 +82,7 @@ export class AuthGuard implements CanActivate {
       if (!!!projectId || !!allowPersonNotInProject) {
         return true;
       }
+
       const ability = this.caslAbilityFactory.createForUser(
         user,
         projectId,

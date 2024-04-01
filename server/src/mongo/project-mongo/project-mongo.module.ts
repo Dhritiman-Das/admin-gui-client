@@ -14,6 +14,7 @@ import { ProjectMongoService } from './project-mongo.service';
   ],
   providers: [ProjectMongoService],
   exports: [
+    ProjectMongoService,
     MongooseModule.forFeature([
       {
         name: Project.name,

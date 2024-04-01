@@ -8,6 +8,7 @@ import {
 } from '@casl/ability';
 import { Injectable, Type, UnauthorizedException } from '@nestjs/common';
 import { FlattenMaps, ObjectId, Types } from 'mongoose';
+import { Mutation } from 'src/mongo/mutation-mongo/mutation-mongo.schema';
 import { Project } from 'src/mongo/project-mongo/project-mongo.schema';
 import { Query } from 'src/mongo/query-mongo/query-mongo.schema';
 import { User } from 'src/mongo/user-mongo/user-mongo.schema';
@@ -22,7 +23,13 @@ export enum Action {
 }
 
 export type Subjects =
-  | InferSubjects<typeof User | typeof Project | typeof Query | typeof Member>
+  | InferSubjects<
+      | typeof User
+      | typeof Project
+      | typeof Query
+      | typeof Mutation
+      | typeof Member
+    >
   | 'all';
 
 export type AppAbility = MongoAbility<[Action, Subjects]>;
@@ -40,6 +47,7 @@ const permissionMap: {
 const resourceMap = {
   projects: Project,
   query: Query,
+  mutate: Mutation,
   members: Member,
 };
 

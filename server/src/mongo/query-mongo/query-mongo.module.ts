@@ -14,6 +14,7 @@ import { Query, QuerySchema } from './query-mongo.schema';
   ],
   providers: [QueryMongoService],
   exports: [
+    QueryMongoService,
     MongooseModule.forFeature([
       {
         name: Query.name,
