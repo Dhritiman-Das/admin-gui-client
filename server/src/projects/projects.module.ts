@@ -9,12 +9,16 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { UserMongoModule } from 'src/mongo/user-mongo/user-mongo.module';
 import { CaslModule } from 'src/casl/casl.module';
 import { WaitlistsMongoModule } from 'src/mongo/waitlists-mongo/waitlists-mongo.module';
+import { MutationModule } from 'src/mutation/mutation.module';
+import { MutationMongoModule } from 'src/mongo/mutation-mongo/mutation-mongo.module';
 
 @Module({
   imports: [
     ProjectMongoModule,
     QueryModule,
     QueryMongoModule,
+    MutationModule,
+    MutationMongoModule,
     UserMongoModule,
     CaslModule,
     WaitlistsMongoModule,

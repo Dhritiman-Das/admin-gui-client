@@ -20,6 +20,7 @@ import { decryptData, encryptData } from 'lib/helpers';
 import { WaitlistsMongoService } from 'src/mongo/waitlists-mongo/waitlists-mongo.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PROJECT_JOINING_INVITE } from 'lib/email-template/project-joining-invite';
+import { MutationService } from 'src/mutation/mutation.service';
 
 @Injectable()
 export class ProjectsService {
@@ -28,6 +29,7 @@ export class ProjectsService {
     private readonly userMongoService: UserMongoService,
     private readonly queryMongoService: QueryMongoService,
     private readonly queryService: QueryService,
+    private readonly mutationService: MutationService,
     private readonly waitlistsMongoService: WaitlistsMongoService,
     private readonly mailerService: MailerService,
   ) {}
@@ -175,6 +177,12 @@ export class ProjectsService {
   }) {
     return await this.queryService.remove({
       query: { _id: queryId },
+    });
+  }
+
+  async listMutations({ projectId }: { projectId: string }) {
+    return await this.mutationService.findAllMutations({
+      projectId,
     });
   }
 

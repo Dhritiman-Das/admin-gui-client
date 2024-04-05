@@ -8,12 +8,14 @@ import { UserMongoModule } from 'src/mongo/user-mongo/user-mongo.module';
 import { ProjectMongoModule } from 'src/mongo/project-mongo/project-mongo.module';
 import { HistoryModule } from 'src/history/history.module';
 import { CaslModule } from 'src/casl/casl.module';
+import { MutationMongoModule } from 'src/mongo/mutation-mongo/mutation-mongo.module';
 
 @Module({
   imports: [
     QueryMongoModule,
     UserMongoModule,
     ProjectMongoModule,
+    MutationMongoModule,
     HistoryModule,
     CaslModule,
   ],

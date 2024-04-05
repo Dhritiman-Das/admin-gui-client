@@ -25,6 +25,7 @@ import { Query } from 'src/mongo/query-mongo/query-mongo.schema';
 import { Member } from './entities/project.entity';
 import { Request } from 'express';
 import { RequestWithUser } from 'types/request';
+import { Mutation } from 'src/mongo/mutation-mongo/mutation-mongo.schema';
 
 @UseGuards(AuthGuard)
 @Controller('projects')
@@ -157,6 +158,15 @@ export class ProjectsController {
     @Param('queryId') queryId: string,
   ) {
     return this.projectsService.deleteQuery({ projectId, queryId });
+  }
+
+  @CheckAbility({
+    action: Action.Read,
+    subject: Mutation,
+  })
+  @Get('/:projectId/mutations')
+  listMutations(@Param('projectId') projectId: string) {
+    return this.projectsService.listMutations({ projectId });
   }
 
   @CheckAbility({

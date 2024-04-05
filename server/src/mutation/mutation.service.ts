@@ -35,11 +35,11 @@ export class MutationService {
     return `This action returns all mutation`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} mutation`;
+  findOne(id: string) {
+    return this.mutationMongoService.findOne({ query: { _id: id } });
   }
 
-  update(id: string, updateMutationDto: Partial<Mutation>) {
+  update(id: string, updateMutationDto: UpdateMutationDto) {
     return this.mutationMongoService.findOneAndUpdate({
       query: { _id: id },
       update: updateMutationDto,
@@ -48,5 +48,9 @@ export class MutationService {
 
   remove(id: string) {
     return this.mutationMongoService.delete({ query: { _id: id } });
+  }
+
+  findAllMutations({ projectId }: { projectId: string }) {
+    return this.mutationMongoService.findAll({ query: { project: projectId } });
   }
 }

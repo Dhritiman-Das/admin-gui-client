@@ -15,7 +15,6 @@ import { MutationSchema } from './mutation-mongo.schema';
   ],
   providers: [MutationMongoService],
   exports: [
-    MutationMongoService,
     MongooseModule.forFeature([
       {
         name: Mutation.name,

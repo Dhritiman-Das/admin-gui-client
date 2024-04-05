@@ -95,7 +95,7 @@ export default function EditMembersDialog({
       const project = user?.projects[0];
       const email = user?.email;
       const role = project?.role;
-      const isAdvancedRolesOpen = project?.isAdvancedSettings;
+      const isAdvancedRolesOpen = project?.isAdvancedSettings ?? false;
       const advancedRoles = project?.advancedSettings;
       form.setValue("email", email || "");
       form.setValue("role", role || "support");
@@ -116,8 +116,7 @@ export default function EditMembersDialog({
   });
   const role = form.watch("role");
 
-  // Update advancedRoles when role changes
-  useEffect(() => {
+  const handleRoleChange = (role: string) => {
     switch (role) {
       case "admin":
         form.setValue("advancedRoles", ADMIN_ROLES);
@@ -131,7 +130,12 @@ export default function EditMembersDialog({
       default:
         break;
     }
-  }, [role, form]);
+  };
+  useEffect(() => {
+    console.log({
+      advancedRoles: form.watch("advancedRoles"),
+    });
+  }, [form.watch("advancedRoles")]);
   const onSubmit = async (data: Member) => {
     updateMembersMutation.mutate({
       userId,
@@ -179,7 +183,13 @@ export default function EditMembersDialog({
                 <FormItem>
                   <FormLabel>User role</FormLabel>
 
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={(e) => {
+                      field.onChange(e);
+                      handleRoleChange(e);
+                    }}
+                  >
                     <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a role" />

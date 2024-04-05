@@ -5,12 +5,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { ProjectMongoModule } from 'src/mongo/project-mongo/project-mongo.module';
 import { QueryMongoModule } from 'src/mongo/query-mongo/query-mongo.module';
 import { CaslModule } from 'src/casl/casl.module';
+import { MutationMongoModule } from 'src/mongo/mutation-mongo/mutation-mongo.module';
 
 @Module({
   imports: [
     UsersModule,
     ProjectMongoModule,
     QueryMongoModule,
+    MutationMongoModule,
     CaslModule,
     JwtModule.register({
       global: true,

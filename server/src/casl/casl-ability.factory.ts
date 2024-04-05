@@ -59,7 +59,7 @@ export class CaslAbilityFactory {
     isOwner: boolean,
     allowPersonNotInProject: boolean = false,
   ) {
-    console.log({ hellohello: allowPersonNotInProject });
+    console.log('hellohello', { allowPersonNotInProject, isOwner, projectId });
 
     const { can, cannot, build } = new AbilityBuilder(createMongoAbility);
     let hasMatchingProject = false;

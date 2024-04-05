@@ -88,4 +88,21 @@ export class MutationMongoService {
     }
     return mutationDoc;
   }
+
+  async findAll({
+    query,
+    projection,
+    options,
+    populate,
+  }: {
+    query: any;
+    projection?: any;
+    options?: any;
+    populate?: any;
+  }) {
+    const mutationDocs = await this.mutationModel
+      .find(query, projection, options)
+      .populate(populate);
+    return mutationDocs;
+  }
 }

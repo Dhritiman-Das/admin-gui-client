@@ -16,7 +16,8 @@ import { CheckAbility } from 'src/casl/abilities.decorator';
 import { Action } from 'src/casl/casl-ability.factory';
 import { Mutation } from 'src/mongo/mutation-mongo/mutation-mongo.schema';
 
-@Controller('mutation')
+@UseGuards(AuthGuard)
+@Controller('mutations')
 export class MutationController {
   constructor(private readonly mutationService: MutationService) {}
 
@@ -30,21 +31,40 @@ export class MutationController {
     return this.mutationService.create(createMutationDto);
   }
 
+  @CheckAbility({
+    action: Action.Read,
+    subject: Mutation,
+  })
   @Get()
   findAll() {
     return this.mutationService.findAll();
   }
 
+  @CheckAbility({
+    action: Action.Read,
+    subject: Mutation,
+  })
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.mutationService.findOne(+id);
+    return this.mutationService.findOne(id);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateMutationDto: UpdateMutationDto) {
-  //   return this.mutationService.update(+id, updateMutationDto);
-  // }
+  @CheckAbility({
+    action: Action.Update,
+    subject: Mutation,
+  })
+  @Patch(':mutationId')
+  update(
+    @Param('mutationId') mutationId: string,
+    @Body() updateMutationDto: UpdateMutationDto,
+  ) {
+    return this.mutationService.update(mutationId, updateMutationDto);
+  }
 
+  @CheckAbility({
+    action: Action.Delete,
+    subject: Mutation,
+  })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.mutationService.remove(id);

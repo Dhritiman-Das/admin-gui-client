@@ -15,6 +15,7 @@ import { QueryMongoService } from 'src/mongo/query-mongo/query-mongo.service';
 import { CHECK_ABILITY, RequiredRule } from 'src/casl/abilities.decorator';
 import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
 import { ForbiddenError } from '@casl/ability';
+import { MutationMongoService } from 'src/mongo/mutation-mongo/mutation-mongo.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -25,6 +26,7 @@ export class AuthGuard implements CanActivate {
     private readonly userMongoService: UserMongoService,
     private readonly projectMongoService: ProjectMongoService,
     private readonly queryMongoService: QueryMongoService,
+    private readonly mutationMongoService: MutationMongoService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -61,7 +63,8 @@ export class AuthGuard implements CanActivate {
 
       let projectId = request.params.projectId;
       const queryId = request.params.queryId;
-
+      const mutationId = request.params.mutationId;
+      console.log({ mutationId });
       let isOwner = false;
       let allowPersonNotInProject = false;
 
@@ -71,6 +74,12 @@ export class AuthGuard implements CanActivate {
         });
         projectId = query.project;
         isOwner = query.author.toString() === userId;
+      } else if (mutationId) {
+        const mutation = await this.mutationMongoService.findOne({
+          query: { _id: mutationId },
+        });
+        projectId = mutation.project;
+        isOwner = mutation.author.toString() === userId;
       }
       for (const rule of rules) {
         if (rule.allowPersonNotInProject) {

@@ -9,6 +9,7 @@ import {
   Users,
   Bell,
   LucideIcon,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect } from "react";
@@ -19,11 +20,13 @@ import { PlanDialog } from "./planDialog";
 import { NotificationDropdown } from "../essentials/notification-dropdown/notificationDropdown";
 import AppLogo from "../essentials/app-logo";
 import { ProfileDropdown } from "./profileDropdown";
+import { Badge } from "../ui/badge";
 
 type SingleNavigation = {
   name: string;
   href?: string;
   icon: LucideIcon;
+  disabled?: boolean;
   current: boolean;
   openComponent?: React.ReactElement;
 };
@@ -52,6 +55,7 @@ export default function Sidebar() {
           name: "Mutate",
           href: `/home/${localStorage.getItem("projectId")}/mutate`,
           icon: NotebookPen,
+          disabled: true,
           current: pathName.includes("mutate"),
         },
         {
@@ -66,12 +70,12 @@ export default function Sidebar() {
           icon: Users,
           current: pathName.includes("members"),
         },
-        {
-          name: "Notifications",
-          icon: Bell,
-          current: false,
-          openComponent: <NotificationDropdown />,
-        },
+        // {
+        //   name: "Notifications",
+        //   icon: Bell,
+        //   current: false,
+        //   openComponent: <NotificationDropdown />,
+        // },
         {
           name: "Project",
           href: `/home/${localStorage.getItem("projectId")}/project`,
@@ -97,9 +101,9 @@ export default function Sidebar() {
         {navigation.top.map((item, index) =>
           item?.href ? (
             <Link
-              key={item.name + index}
+              key={"top_" + item.name + index}
               href={item.href as string}
-              className={`flex items-center rounded-lg px-3 py-2 ${
+              className={`flex items-center relative rounded-lg px-3 py-2 ${
                 item.current ? "bg-secondary" : ""
               } ${
                 item.href === pathName.split("/")[2] ? "bg-secondary" : ""
@@ -107,16 +111,23 @@ export default function Sidebar() {
             >
               <item.icon className="h-6 w-6" />
               <span className="ml-3 flex-1 whitespace-nowrap">{item.name}</span>
+              {item?.disabled ? (
+                <Badge className="absolute right-0" variant={"outline"}>
+                  <Sparkles size={14} /> Soon
+                </Badge>
+              ) : null}
             </Link>
           ) : item?.openComponent ? (
-            item.openComponent
+            <React.Fragment key={"top_" + item.name + index}>
+              {item.openComponent}
+            </React.Fragment>
           ) : null
         )}
         <div className="mt-auto flex flex-col gap-1">
           <PlanDialog />
           {navigation.bottom.map((item, index) => (
             <Link
-              key={item.name + index}
+              key={"bottom_" + item.name + index}
               href={item.href as string}
               className={`flex items-center rounded-lg px-3 py-2 ${
                 item.current ? "bg-secondary" : ""

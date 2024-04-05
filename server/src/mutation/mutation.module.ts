@@ -28,5 +28,6 @@ import { QueryMongoModule } from 'src/mongo/query-mongo/query-mongo.module';
       useClass: AuthGuard,
     },
   ],
+  exports: [MutationService],
 })
 export class MutationModule {}
