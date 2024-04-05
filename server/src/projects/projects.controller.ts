@@ -170,7 +170,7 @@ export class ProjectsController {
   }
 
   @CheckAbility({
-    action: Action.Create,
+    action: Action.Read,
     subject: Query,
   })
   @Get('/:projectId/db-details')

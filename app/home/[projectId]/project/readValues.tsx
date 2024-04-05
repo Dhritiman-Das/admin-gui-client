@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Project } from "@/types/project";
 import { Skeleton } from "@/components/ui/skeleton";
+import { blurMongoCredentials } from "@/lib/helpers";
 
 export default function ReadValues({
   toggleEditView,
@@ -40,7 +41,10 @@ export default function ReadValues({
         {isPending ? (
           <Skeleton className="h-4 w-[450px]" />
         ) : (
-          <p>{project?.dbConnectionString || "No URI"}</p>
+          <p>
+            {blurMongoCredentials(project?.dbConnectionString || "") ||
+              "No URI"}
+          </p>
         )}
       </div>
       <div className="grid w-full items-center gap-1.5">
