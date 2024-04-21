@@ -4,19 +4,24 @@ import {
   createCipheriv,
   createDecipheriv,
 } from 'crypto';
+import { FieldObject } from 'src/mongo/mutation-mongo/mutation-mongo.schema';
 
 export function generateQuery(
   queryTemplate: string,
   variables: Record<string, string>,
   queryDataTypes: Record<string, string>,
 ): any {
+  console.log({ queryTemplate, variables, queryDataTypes });
+
   // Parse the query template string into an object
-  const queryObj = JSON.parse(
-    queryTemplate.replace(/var\((\w+)\)/g, '"__$1__"'),
-  );
+  // const queryObj = JSON.parse(
+  //   queryTemplate.replace(/var\((\w+)\)/g, '"__$1__"'),
+  // );
+  const queryTemplateObj = JSON.parse(queryTemplate);
+  console.log(queryTemplateObj);
 
   // Process the object as before
-  return processQueryObj(queryObj, variables, queryDataTypes);
+  return processQueryObj(queryTemplateObj, variables, queryDataTypes);
 }
 
 function processQueryObj(
@@ -69,6 +74,7 @@ export function extractVariables(query: string) {
   return variables;
 }
 export function capitalizeFirstChar(str: string) {
+  if (!!!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -127,4 +133,28 @@ export function safeJsonParse(str: string | undefined) {
     console.error(`Failed to parse JSON string: ${str}`, err);
     return {};
   }
+}
+
+export function generateUpdateObject(
+  mutateObj: FieldObject[],
+  mutationDto: Record<string, any>,
+): Record<string, any> {
+  let updateObj: Record<string, any> = {};
+  for (const singleMutate of mutateObj) {
+    const { field, required, type } = singleMutate;
+    const newValue = mutationDto[field];
+    if (newValue !== undefined) {
+      if (type === 'number') {
+        updateObj[field] = Number(newValue);
+      } else if (type === 'boolean') {
+        updateObj[field] = newValue === 'true';
+      } else if (type === 'date') {
+        updateObj[field] = new Date(newValue);
+      } else {
+        updateObj[field] = newValue;
+      }
+    }
+  }
+
+  return updateObj;
 }

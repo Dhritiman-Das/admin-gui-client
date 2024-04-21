@@ -11,12 +11,14 @@ import { ProjectMongoModule } from 'src/mongo/project-mongo/project-mongo.module
 import { UserMongoModule } from 'src/mongo/user-mongo/user-mongo.module';
 import { CaslModule } from 'src/casl/casl.module';
 import { QueryMongoModule } from 'src/mongo/query-mongo/query-mongo.module';
+import { HistoryModule } from 'src/history/history.module';
 
 @Module({
   imports: [
     MutationMongoModule,
     ProjectMongoModule,
     QueryMongoModule,
+    HistoryModule,
     UserMongoModule,
     CaslModule,
   ],

@@ -26,10 +26,13 @@ import { WaitlistsMongoModule } from './mongo/waitlists-mongo/waitlists-mongo.mo
 import { MutationModule } from './mutation/mutation.module';
 import { MutationMongoService } from './mongo/mutation-mongo/mutation-mongo.service';
 import { MutationMongoModule } from './mongo/mutation-mongo/mutation-mongo.module';
+import { ExtractProjectMiddleware } from 'middlewares/extract-project.middleware';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     MongooseModule.forRoot(process.env.MONGO_URI),
     MailerModule.forRoot({
       transport: {
@@ -72,6 +75,12 @@ import { MutationMongoModule } from './mongo/mutation-mongo/mutation-mongo.modul
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggingMiddleware, RateLimitingMiddleware).forRoutes('*');
+    consumer
+      .apply(
+        LoggingMiddleware,
+        RateLimitingMiddleware,
+        ExtractProjectMiddleware,
+      )
+      .forRoutes('*');
   }
 }

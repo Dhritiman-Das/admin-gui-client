@@ -28,6 +28,7 @@ export class HistoryController {
       populate: [
         { path: 'user', select: '_id name image' },
         { path: 'query', select: '_id name dbName dbCollectionName' },
+        { path: 'mutation', select: '_id name dbName dbCollectionName' },
       ],
     });
   }
@@ -39,6 +40,7 @@ export class HistoryController {
       populate: [
         { path: 'user', select: '_id name image' },
         { path: 'query', select: '_id name dbName dbCollectionName' },
+        { path: 'mutation', select: '_id name dbName dbCollectionName' },
       ],
     });
   }

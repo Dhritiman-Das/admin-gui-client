@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserMongoService } from 'src/mongo/user-mongo/user-mongo.service';
@@ -109,8 +109,13 @@ export class UsersService {
         path: 'invitedProjects',
         populate: {
           path: 'project',
-          select: 'name mode',
+          select: 'name mode admin',
           model: 'Project',
+          populate: {
+            path: 'admin',
+            select: '_id name image email timeZone verified title',
+            model: 'User',
+          },
         },
       },
     });
@@ -138,7 +143,7 @@ export class UsersService {
           throw new Error('User not invited to this project');
         }
 
-        return this.userMongoService.findOneAndUpdate({
+        const userUpdated = this.userMongoService.findOneAndUpdate({
           query: { _id: userId },
           update: {
             $push: { projects: project },
@@ -148,8 +153,15 @@ export class UsersService {
             new: true,
           },
         });
+        if (!!!userUpdated) {
+          throw new HttpException('Error updating user projects.', 404);
+        }
+        return {
+          message: 'User added to project successfully.',
+          project: projectId,
+        };
       } else {
-        return this.userMongoService.findOneAndUpdate({
+        const userUpdated = this.userMongoService.findOneAndUpdate({
           query: { _id: userId },
           update: {
             $pull: {
@@ -158,6 +170,13 @@ export class UsersService {
           },
           options: { new: true },
         });
+        if (!!!userUpdated) {
+          throw new HttpException('Error updating user projects.', 404);
+        }
+        return {
+          message: 'User removed from project successfully.',
+          project: projectId,
+        };
       }
     } catch (error) {
       console.error(error);

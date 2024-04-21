@@ -10,12 +10,14 @@ import {
   DropdownMenuTrigger,
   dropDownItemClass,
 } from "@/components/ui/dropdown-menu";
-import { querySchema } from "./columns";
+import { mutationSchema } from "./columns";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+import DeleteMutationDialog from "./deleteMutationDialog";
+import RunMutationDialog from "./[mutateId]/runMutationDialog";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -26,7 +28,7 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const router = useRouter();
   const [currentProjectId, setCurrentProjectId] = React.useState("");
-  const query = querySchema.parse(row.original);
+  const mutation = mutationSchema.parse(row.original);
   useEffect(() => {
     setCurrentProjectId(localStorage.getItem("projectId") || "");
   }, []);
@@ -44,12 +46,25 @@ export function DataTableRowActions<TData>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          <Link href={`/home/${currentProjectId}/query/${query._id}/view`}>
+          <RunMutationDialog
+            projectId={currentProjectId}
+            mutationId={mutation._id}
+            activateBtn={<div className={dropDownItemClass}>Run</div>}
+          />
+          <Link href={`/home/${currentProjectId}/mutate/${mutation._id}/view`}>
             <DropdownMenuItem>View</DropdownMenuItem>
           </Link>
-
           <DropdownMenuItem>Favorite</DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DeleteMutationDialog
+            projectId={currentProjectId}
+            mutationId={mutation._id}
+            activateBtn={
+              <div className={`${dropDownItemClass} text-destructive`}>
+                Delete
+              </div>
+            }
+          />
         </DropdownMenuContent>
       </DropdownMenu>
     </>

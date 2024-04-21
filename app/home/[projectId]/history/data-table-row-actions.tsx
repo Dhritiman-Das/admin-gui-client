@@ -15,8 +15,9 @@ import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import { historySchema } from "./columns";
+import { History, historySchema } from "./columns";
 import { RunQueryDialog } from "../query/[queryId]/runQueryDialog";
+import RunMutationDialog from "../mutate/[mutateId]/runMutationDialog";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -26,8 +27,10 @@ export function DataTableRowActions<TData>({
 }: DataTableRowActionsProps<TData>) {
   const router = useRouter();
   const [currentProjectId, setCurrentProjectId] = React.useState("");
-  const task = historySchema.parse(row.original);
-  const queryId = task.query._id;
+  const history = row.original as History;
+  const id = history._id;
+  const queryId = history.query?._id || "";
+  const mutationId = history.mutation?._id || "";
   useEffect(() => {
     setCurrentProjectId(localStorage.getItem("projectId") || "");
   }, []);
@@ -45,14 +48,22 @@ export function DataTableRowActions<TData>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          <Link href={`/home/${currentProjectId}/history/${task._id}`}>
+          <Link href={`/home/${currentProjectId}/history/${id}`}>
             <DropdownMenuItem>View</DropdownMenuItem>
           </Link>
-          <RunQueryDialog
-            projectId={currentProjectId}
-            queryId={queryId}
-            activateBtn={<div className={dropDownItemClass}>Run</div>}
-          />
+          {history.type === "query" ? (
+            <RunQueryDialog
+              projectId={currentProjectId}
+              queryId={queryId}
+              activateBtn={<div className={dropDownItemClass}>Run</div>}
+            />
+          ) : (
+            <RunMutationDialog
+              projectId={currentProjectId}
+              mutationId={mutationId}
+              activateBtn={<div className={dropDownItemClass}>Run</div>}
+            />
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

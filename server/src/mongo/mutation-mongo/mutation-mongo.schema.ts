@@ -8,7 +8,7 @@ import { User, UserDocument } from '../user-mongo/user-mongo.schema';
 
 export type MutationDocument = HydratedDocument<Mutation>;
 
-@Schema()
+@Schema({ _id: false })
 export class FieldObject {
   @Prop()
   field: string;

@@ -41,5 +41,10 @@ export function useUserProjects() {
     }
   }, [router, response]);
 
-  return { isPending, error, response };
+  return {
+    isPending,
+    error,
+    response,
+    hasInvite: response?.data?.invitedProjectsLength > 0,
+  };
 }

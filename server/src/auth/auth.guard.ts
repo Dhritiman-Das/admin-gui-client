@@ -61,10 +61,10 @@ export class AuthGuard implements CanActivate {
       request['user'] = { ...user.toObject(), userId: user?._id };
       console.log('authgrd', request['user']);
 
-      let projectId = request.params.projectId;
+      let projectId = request.params.projectId ?? request.project;
+
       const queryId = request.params.queryId;
       const mutationId = request.params.mutationId;
-      console.log({ mutationId });
       let isOwner = false;
       let allowPersonNotInProject = false;
 

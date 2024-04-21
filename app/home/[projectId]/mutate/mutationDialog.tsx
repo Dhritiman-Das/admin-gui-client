@@ -41,7 +41,7 @@ import { QueryDataTypes } from "../query/addQueryDialog";
 import { capitalizeFirstLetter } from "@/lib/helpers";
 import { PlusIcon } from "lucide-react";
 
-const FieldObject = z.object({
+export const FieldObject = z.object({
   field: z.string(),
   type: z.enum(["string", "number", "boolean", "date"]),
   required: z.boolean(),
@@ -65,9 +65,7 @@ export const MutationFormSchema = z.object({
     .record(z.enum(["string", "number", "boolean", "date"]))
     .optional(),
   projection: z.string().optional(),
-  sort: z.string().optional(),
   mutateObj: z.array(FieldObject),
-  collation: z.string().optional(),
 });
 
 export type Mutation = z.infer<typeof MutationFormSchema>;
@@ -77,11 +75,15 @@ export default function MutationDialog({
   initialData,
   onSubmit,
   activateBtn,
+  closeModal,
+  isLoading,
 }: {
   type: "add" | "edit";
   initialData?: Mutation;
   onSubmit: (data: Mutation) => void;
   activateBtn: React.ReactNode;
+  closeModal: boolean;
+  isLoading: boolean;
 }) {
   const { resolvedTheme } = useTheme();
   const jwtToken = useUserToken();
@@ -94,6 +96,13 @@ export default function MutationDialog({
       mutateObj: [{ field: "", type: "string", required: false }],
     },
   });
+
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+    }
+  }, [initialData]);
+
   const watchedQuery = form.watch("queryString");
 
   const [dbDetails, setDbDetails] = useState<
@@ -121,11 +130,15 @@ export default function MutationDialog({
     setVariables(extractVariables(watchedQuery));
   }, [watchedQuery]);
 
+  useEffect(() => {
+    if (!!closeModal) {
+      setDialogOpen(false);
+    }
+  }, [closeModal]);
+
   const onSubmitFn = (data: Mutation) => {
     console.log({ data });
-
     onSubmit(data);
-    setDialogOpen(false);
   };
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -388,7 +401,9 @@ export default function MutationDialog({
                         <FormControl>
                           <Select
                             value={field.value.toString()}
-                            onValueChange={field.onChange}
+                            onValueChange={(value) =>
+                              field.onChange(value === "true")
+                            }
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Required" />
@@ -441,7 +456,7 @@ export default function MutationDialog({
             />
 
             <DialogFooter>
-              <Button type="submit" loading={false}>
+              <Button type="submit" loading={isLoading}>
                 Save changes
               </Button>
             </DialogFooter>

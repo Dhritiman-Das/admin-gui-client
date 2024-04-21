@@ -34,6 +34,25 @@ export default function Page({
     enabled: !!jwtToken && !!params.historyId,
   });
   const [data, setData] = React.useState<History>();
+  const [queryHistory, setQueryHistory] = React.useState<{
+    query: History["query"];
+  }>();
+  const [mutationHistory, setMutationHistory] = React.useState<{
+    mutation: History["mutation"];
+    mutationObjValues: History["mutationObjValues"];
+  }>();
+
+  useEffect(() => {
+    if (data?.type === "query") {
+      setQueryHistory({ query: data.query });
+    }
+    if (data?.type === "mutation") {
+      setMutationHistory({
+        mutation: data.mutation,
+        mutationObjValues: data.mutationObjValues,
+      });
+    }
+  }, [data]);
   useEffect(() => {
     if (queryData?.status === 200 && queryData?.data) {
       setData(queryData?.data);
@@ -42,19 +61,36 @@ export default function Page({
   if (error) return <ErrorScreen error={error} />;
   return (
     <div>
-      <SingleDetail
-        header="Query"
-        value={data?.query.name || "Not found"}
-        loading={isPending}
-      />
+      {data?.type === "query" && (
+        <>
+          <SingleDetail
+            header="Query"
+            value={queryHistory?.query?.name || "Not found"}
+            loading={isPending}
+          />
+        </>
+      )}
+      {data?.type === "mutation" && (
+        <>
+          <SingleDetail
+            header="Mutation"
+            value={mutationHistory?.mutation?.name || "Not found"}
+            loading={isPending}
+          />
+        </>
+      )}
       <SingleDetail
         header="Database"
-        value={data?.query.dbName || "Not found"}
+        value={data?.query?.dbName || data?.mutation?.dbName || "Not found"}
         loading={isPending}
       />
       <SingleDetail
         header="Collection"
-        value={data?.query.dbCollectionName || "Not found"}
+        value={
+          data?.query?.dbCollectionName ||
+          data?.mutation?.dbCollectionName ||
+          "Not found"
+        }
         loading={isPending}
       />
       <SingleDetail
@@ -62,6 +98,15 @@ export default function Page({
         value={JSON.stringify(data?.queryValues) || "No query values"}
         loading={isPending}
       />
+      {data?.type === "mutation" && (
+        <SingleDetail
+          header="Mutation values"
+          value={
+            JSON.stringify(data?.mutationObjValues) || "No mutation values"
+          }
+          loading={isPending}
+        />
+      )}
       <SingleDetail
         header="Status"
         value={

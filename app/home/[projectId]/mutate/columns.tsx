@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { ProfileHoverCard } from "@/components/essentials/profileHoverCard";
 import { useEffect, useState } from "react";
+import { FieldObject } from "./mutationDialog";
 
 export const profileSchema = z.object({
   name: z.string(),
@@ -28,18 +29,19 @@ export const profileSchema = z.object({
   _id: z.string(),
 });
 
-export const querySchema = z.object({
+export const mutationSchema = z.object({
   _id: z.string(),
   name: z.string(),
   dbName: z.string(),
   dbCollectionName: z.string(),
   queryString: z.string(),
   author: profileSchema,
+  mutateObj: z.array(FieldObject).optional(),
 });
 
 export type Profile = z.infer<typeof profileSchema>;
 
-export type Query = z.infer<typeof querySchema>;
+export type Mutation = z.infer<typeof mutationSchema>;
 
 interface NameCellProps {
   row: any;
@@ -47,7 +49,7 @@ interface NameCellProps {
 
 const NameCell: React.FC<NameCellProps> = ({ row }) => {
   const queryId = row.original._id;
-  const name = (row.getValue("name") as Query["name"]) ?? "No Name";
+  const name = (row.getValue("name") as Mutation["name"]) ?? "No Name";
   const [currentProjectId, setCurrentProjectId] = useState("");
   useEffect(() => {
     setCurrentProjectId(localStorage.getItem("projectId") || "");
@@ -64,7 +66,7 @@ const NameCell: React.FC<NameCellProps> = ({ row }) => {
   );
 };
 
-export const Columns: ColumnDef<Query>[] = [
+export const Columns: ColumnDef<Mutation>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -107,10 +109,27 @@ export const Columns: ColumnDef<Query>[] = [
     },
   },
   {
+    accessorKey: "mutateObj",
+    header: "Mutate variables",
+    cell: ({ row }) => {
+      const mutateObj = row.getValue("mutateObj") as Mutation["mutateObj"];
+
+      return (
+        <div className="flex space-x-2">
+          {mutateObj?.map((variable, index) => (
+            <Badge variant={"outline"} key={variable.field + index}>
+              {variable.field}
+            </Badge>
+          ))}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "author",
     header: "Author",
     cell: ({ row }) => {
-      const author = row.getValue("author") as Query["author"];
+      const author = row.getValue("author") as Mutation["author"];
       return <ProfileHoverCard profile={author} />;
     },
   },

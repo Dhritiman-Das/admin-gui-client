@@ -1,6 +1,5 @@
 "use client";
 import { H2 } from "@/components/ui/typography";
-import { DataTable } from "@/app/home/[projectId]/query/data-table";
 import { useQuery } from "@tanstack/react-query";
 import { getQueries } from "@/routes/project-routes";
 import { useEffect, useState } from "react";
@@ -9,9 +8,11 @@ import ErrorScreen from "@/components/errorScreen";
 import LoadingScreen from "@/components/loadingScreen";
 import LoadingPageWithTables from "@/components/loadingPageWithTables";
 import AddMutationDialog from "./addMutationDialog";
-import { Mutation } from "./mutationDialog";
 import EditMutationDialog from "./editMutationDialog";
 import InBeta from "@/components/essentials/in-beta";
+import { Columns, Mutation } from "./columns";
+import { DataTable } from "./data-table";
+import { getMutationsForProject } from "@/routes/mutation-routes";
 
 export default function Page({ params }: { params: { projectId: string } }) {
   const jwtToken = useUserToken();
@@ -20,23 +21,26 @@ export default function Page({ params }: { params: { projectId: string } }) {
     isPending,
     error,
     isSuccess,
-    data: getQueriesData,
+    data: getMutationsData,
   } = useQuery({
-    queryKey: [`${params.projectId}/query`],
+    queryKey: [`${params.projectId}/mutate`],
     queryFn: () =>
-      getQueries({ projectId: params.projectId, token: jwtToken as string }),
+      getMutationsForProject({
+        projectId: params.projectId,
+        token: jwtToken as string,
+      }),
     enabled: !!jwtToken && !!params.projectId,
   });
   const [data, setData] = useState<Mutation[]>([]);
   useEffect(() => {
     if (isSuccess) {
       console.log({
-        queryData: getQueriesData?.data,
+        queryData: getMutationsData?.data,
       });
 
-      setData(getQueriesData?.data || []);
+      setData(getMutationsData?.data || []);
     }
-  }, [isSuccess, getQueriesData?.data]);
+  }, [isSuccess, getMutationsData?.data]);
   if (isPending) return <LoadingPageWithTables />;
   if (error) return <ErrorScreen error={error} />;
   return <InBeta />;
@@ -47,10 +51,9 @@ export default function Page({ params }: { params: { projectId: string } }) {
           <H2>Mutation</H2>
         </div>
         <AddMutationDialog projectId={params.projectId} />
-        <EditMutationDialog projectId={params.projectId} />
       </div>
       <div className="">
-        {/* <DataTable columns={Columns} data={data} /> */}
+        <DataTable columns={Columns} data={data} />
       </div>
     </>
   );

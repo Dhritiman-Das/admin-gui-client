@@ -15,9 +15,9 @@ export class CreateMutationDto {
   @IsNotEmpty()
   project: string;
 
-  @IsMongoId()
-  @IsNotEmpty()
-  author: string;
+  // @IsMongoId()
+  // @IsNotEmpty()
+  // author: string;
 
   @IsString()
   @IsNotEmpty()

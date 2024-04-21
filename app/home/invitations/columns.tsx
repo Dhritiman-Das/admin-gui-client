@@ -5,8 +5,6 @@ import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-col
 import { z } from "zod";
 import { capitalizeFirstChar } from "@/server/lib/helpers";
 import { Badge } from "@/components/ui/badge";
-import { DataTableRowActions } from "./data-table-row-actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
   TooltipContent,

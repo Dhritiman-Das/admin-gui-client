@@ -140,6 +140,7 @@ export class QueryService {
         .sort(sort)
         .toArray();
       await this.historyService.create({
+        type: 'query',
         project: await this.projectMongoService.findOne({
           query: { _id: projectId },
         }),
@@ -154,6 +155,7 @@ export class QueryService {
     } catch (error) {
       console.error({ error });
       await this.historyService.create({
+        type: 'query',
         project: await this.projectMongoService.findOne({
           query: { _id: projectId },
         }),

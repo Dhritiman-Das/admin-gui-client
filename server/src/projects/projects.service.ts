@@ -21,6 +21,7 @@ import { WaitlistsMongoService } from 'src/mongo/waitlists-mongo/waitlists-mongo
 import { MailerService } from '@nestjs-modules/mailer';
 import { PROJECT_JOINING_INVITE } from 'lib/email-template/project-joining-invite';
 import { MutationService } from 'src/mutation/mutation.service';
+import { INVITATIONS_LINK } from 'lib/constants';
 
 @Injectable()
 export class ProjectsService {
@@ -352,6 +353,7 @@ export class ProjectsService {
         projectName: project.name,
         ip: '',
         inviteeName: '',
+        joinLink: `${process.env.FRONTEND_URL}/home/invitations`,
       }),
     });
     if (!user) {
