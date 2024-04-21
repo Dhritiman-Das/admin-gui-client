@@ -14,9 +14,9 @@ import { AdapterUser } from "next-auth/adapters";
 //   emailVerified: string;
 //   role: string;
 // }
-// export interface MySession extends NextAuthSession {
-//   userToken?: string;
-// }
+export interface MySession extends Session {
+  userToken?: string;
+}
 
 const authOptions = NextAuth({
   providers: [
@@ -112,7 +112,7 @@ const authOptions = NextAuth({
       token,
       user,
     }: {
-      session: Session;
+      session: MySession;
       token: any;
       user: any;
     }) {
