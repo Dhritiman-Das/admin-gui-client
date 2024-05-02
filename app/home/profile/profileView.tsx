@@ -10,7 +10,7 @@ import React from "react";
 import EditProfileDialog, { ProfileFields } from "./editProfileDialog";
 import { Button } from "@/components/ui/button";
 import { Clock, Mail, Phone, Plus } from "lucide-react";
-import { getLocalTime } from "@/server/lib/helpers";
+import { getLocalTime } from "@/lib/helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";

@@ -2,7 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { z } from "zod";
-import { capitalizeFirstChar, extractVariables } from "@/server/lib/helpers";
 import { Badge } from "@/components/ui/badge";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { capitalizeFirstLetter } from "@/lib/helpers";
 
 export const historySchema = z.object({
   _id: z.string(),
@@ -83,7 +83,7 @@ export const Columns: ColumnDef<History>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[200px] truncate font-medium">
-            {capitalizeFirstChar(rowOriginal.type)}
+            {capitalizeFirstLetter(rowOriginal.type)}
           </span>
         </div>
       );

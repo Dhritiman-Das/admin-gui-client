@@ -6,7 +6,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { getLocalTime } from "@/server/lib/helpers";
+import { getLocalTime } from "@/lib/helpers";
 import { CalendarDays, Clock, Mail } from "lucide-react";
 
 export function ProfileHoverCard({ profile }: { profile: Profile }) {

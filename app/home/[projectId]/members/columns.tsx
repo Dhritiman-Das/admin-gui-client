@@ -3,7 +3,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../../../../components/ui/data-table/data-table-column-header";
 import { z } from "zod";
-import { capitalizeFirstChar } from "@/server/lib/helpers";
 import { Badge } from "@/components/ui/badge";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { capitalizeFirstLetter } from "@/lib/helpers";
 
 const advancedSettingsSchema = z.object({
   query: z.string(),
@@ -79,7 +79,7 @@ export const Columns: ColumnDef<Member>[] = [
     ),
     cell: ({ row }) => {
       const role = row.original.projects[0].role;
-      return <Badge variant="outline">{capitalizeFirstChar(role)}</Badge>;
+      return <Badge variant="outline">{capitalizeFirstLetter(role)}</Badge>;
     },
   },
   {
@@ -105,16 +105,16 @@ export const Columns: ColumnDef<Member>[] = [
                         : "bg-green-600 hover:bg-green-500"
                     } text-gray-100`}
                   >
-                    {capitalizeFirstChar(key)}
+                    {capitalizeFirstLetter(key)}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
                   <div className="rounded-lg ">
                     <div className="text-sm font-medium ">
-                      {capitalizeFirstChar(key)}
+                      {capitalizeFirstLetter(key)}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {capitalizeFirstChar(permissionsValues[index])}
+                      {capitalizeFirstLetter(permissionsValues[index])}
                     </div>
                   </div>
                 </TooltipContent>

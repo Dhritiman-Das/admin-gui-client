@@ -20,7 +20,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { executeQuery, getQuery } from "@/routes/project-routes";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import { useEffect, useState } from "react";
-import { extractVariables } from "@/server/lib/helpers";
+import { extractVariables } from "@/lib/helpers";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";

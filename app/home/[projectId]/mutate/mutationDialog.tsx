@@ -36,7 +36,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getDbDetails } from "@/routes/project-routes";
 import { useUserToken } from "@/app/hooks/useUserToken";
 import { useTheme } from "next-themes";
-import { extractVariables } from "@/server/lib/helpers";
+import { extractVariables } from "@/lib/helpers";
 import { QueryDataTypes } from "../query/addQueryDialog";
 import { capitalizeFirstLetter } from "@/lib/helpers";
 import { PlusIcon } from "lucide-react";

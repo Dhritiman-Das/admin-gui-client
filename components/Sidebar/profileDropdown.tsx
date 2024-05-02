@@ -31,7 +31,6 @@ import { useUserToken } from "@/app/hooks/useUserToken";
 import { getUserInfo } from "@/routes/user-routes";
 import { useState } from "react";
 import Link from "next/link";
-import { PROFILE_LINK } from "@/server/lib/constants";
 import { Skeleton } from "../ui/skeleton";
 import { Badge } from "../ui/badge";
 

@@ -3,7 +3,6 @@
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header";
 import { z } from "zod";
-import { capitalizeFirstChar } from "@/server/lib/helpers";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -17,6 +16,7 @@ import { handleProjectInvite } from "@/routes/user-routes";
 import { useMutation } from "@/app/hooks/customMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { capitalizeFirstLetter } from "@/lib/helpers";
 
 const ActionCell = ({ row }: { row: Row<ProjectInvite> }) => {
   const queryClient = useQueryClient();
@@ -106,7 +106,7 @@ export const Columns: ColumnDef<ProjectInvite>[] = [
     ),
     cell: ({ row }) => {
       const role = row.original.role;
-      return <Badge variant="outline">{capitalizeFirstChar(role)}</Badge>;
+      return <Badge variant="outline">{capitalizeFirstLetter(role)}</Badge>;
     },
   },
   {
@@ -132,16 +132,16 @@ export const Columns: ColumnDef<ProjectInvite>[] = [
                         : "bg-green-600 hover:bg-green-500"
                     } text-gray-100`}
                   >
-                    {capitalizeFirstChar(key)}
+                    {capitalizeFirstLetter(key)}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
                   <div className="rounded-lg ">
                     <div className="text-sm font-medium ">
-                      {capitalizeFirstChar(key)}
+                      {capitalizeFirstLetter(key)}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {capitalizeFirstChar(permissionsValues[index])}
+                      {capitalizeFirstLetter(permissionsValues[index])}
                     </div>
                   </div>
                 </TooltipContent>

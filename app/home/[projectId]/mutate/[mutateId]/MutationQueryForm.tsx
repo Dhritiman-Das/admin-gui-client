@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { executeMutationQuery, getAMutation } from "@/routes/mutation-routes";
-import { extractVariables } from "@/server/lib/helpers";
+import { extractVariables } from "@/lib/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";

@@ -34,7 +34,6 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { capitalizeFirstChar } from "@/server/lib/helpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { addMembers, getMembers, updateMember } from "@/routes/project-routes";
 import { toast } from "sonner";
@@ -48,6 +47,7 @@ import {
 } from "./addMembersDialog";
 import { AxiosError } from "axios";
 import { useMutation } from "@/app/hooks/customMutation";
+import { capitalizeFirstLetter } from "@/lib/helpers";
 
 export const EditMembersDialogQuery = AddMembersDialogQuery;
 
@@ -237,7 +237,7 @@ export default function EditMembersDialog({
                         <>
                           <FormItem className="flex items-center">
                             <FormLabel className="w-[150px]">
-                              {capitalizeFirstChar(key)}
+                              {capitalizeFirstLetter(key)}
                             </FormLabel>
                             <FormControl>
                               <ToggleGroup

@@ -3,7 +3,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../../../../components/ui/data-table/data-table-column-header";
 import { z } from "zod";
-import { extractVariables } from "@/server/lib/helpers";
 import { Badge } from "@/components/ui/badge";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,6 +16,7 @@ import Link from "next/link";
 import { ProfileHoverCard } from "@/components/essentials/profileHoverCard";
 import { useEffect, useState } from "react";
 import { FieldObject } from "./mutationDialog";
+import { extractVariables } from "@/lib/helpers";
 
 export const profileSchema = z.object({
   name: z.string(),

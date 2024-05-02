@@ -27,7 +27,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { extractVariables, safeJsonParse } from "@/server/lib/helpers";
+import { extractVariables, safeJsonParse } from "@/lib/helpers";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,

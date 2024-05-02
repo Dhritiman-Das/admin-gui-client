@@ -34,11 +34,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { capitalizeFirstChar } from "@/server/lib/helpers";
 import { useQueryClient } from "@tanstack/react-query";
 import { addMembers } from "@/routes/project-routes";
 import { toast } from "sonner";
 import { useMutation } from "@/app/hooks/customMutation";
+import { capitalizeFirstLetter } from "@/lib/helpers";
 
 export const AddMembersDialogQuery = z.object({
   email: z.string().email(),
@@ -230,7 +230,7 @@ export default function AddMembersDialog({ projectId }: { projectId: string }) {
                         <>
                           <FormItem className="flex items-center">
                             <FormLabel className="w-[150px]">
-                              {capitalizeFirstChar(key)}
+                              {capitalizeFirstLetter(key)}
                             </FormLabel>
                             <FormControl>
                               <ToggleGroup

@@ -14,7 +14,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { capitalizeFirstChar } from "@/server/lib/helpers";
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProfileHoverCard } from "@/components/essentials/profileHoverCard";
@@ -22,6 +21,7 @@ import { Profile } from "@/app/home/[projectId]/query/columns";
 import { useMutation } from "../hooks/customMutation";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { capitalizeFirstLetter } from "@/lib/helpers";
 
 type Project = {
   project: {
@@ -88,7 +88,7 @@ export default function ProjectInviteList() {
                   <CardTitle className="text-[18px]">
                     {project.project.name}
                   </CardTitle>
-                  <Badge>{capitalizeFirstChar(project.project.mode)}</Badge>
+                  <Badge>{capitalizeFirstLetter(project.project.mode)}</Badge>
                 </div>
                 <CardDescription>{project.project._id}</CardDescription>
               </CardHeader>
@@ -99,7 +99,7 @@ export default function ProjectInviteList() {
                 </div>
                 <div className="flex gap-2 items-center">
                   <h6 className="w-[100px]">Role</h6>
-                  <h6>{capitalizeFirstChar(project.role)}</h6>
+                  <h6>{capitalizeFirstLetter(project.role)}</h6>
                 </div>
               </CardContent>
               <CardFooter>
