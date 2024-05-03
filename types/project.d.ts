@@ -8,4 +8,5 @@ export type ProjectEdit = {
 export type Project = ProjectEdit & {
   createdAt: Date;
   updatedAt: Date;
+  _id: string;
 };

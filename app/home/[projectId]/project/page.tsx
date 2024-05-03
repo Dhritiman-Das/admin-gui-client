@@ -8,7 +8,11 @@ import { Pencil } from "lucide-react";
 import ReadValues from "./readValues";
 import EditValues from "./editValues";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getProjectInfo, updateProject } from "@/routes/project-routes";
+import {
+  getProjectInfo,
+  getServerIP,
+  updateProject,
+} from "@/routes/project-routes";
 import { Project, ProjectEdit } from "@/types/project";
 import { toast } from "sonner";
 import { AuthRequiredError } from "@/lib/exceptions";
@@ -22,6 +26,7 @@ export default function Page() {
   const queryClient = useQueryClient();
   const jwtToken = useUserToken();
   const [project, setProject] = React.useState<Project>();
+  const [serverIpVal, setServerIpVal] = React.useState<string>("");
   const [projectEdit, setProjectEdit] = React.useState<ProjectEdit>();
   const [currentProjectId, setCurrentProjectId] = React.useState<string>("");
   const {
@@ -32,6 +37,15 @@ export default function Page() {
     queryKey: [`${currentProjectId}/project`],
     queryFn: () => getProjectInfo(currentProjectId, jwtToken as string),
     enabled: !!jwtToken && !!currentProjectId,
+  });
+
+  const {
+    isPending: isServerIpPending,
+    error: serverIpError,
+    data: serverIp,
+  } = useQuery({
+    queryKey: [`${currentProjectId}/project/server-ip`],
+    queryFn: () => getServerIP(),
   });
   const updateProjectMutation = useMutation({
     mutationFn: updateProject,
@@ -58,6 +72,7 @@ export default function Page() {
         dbConnectionString,
         createdAt,
         updatedAt,
+        _id,
       } = response.data;
       setProject({
         mode,
@@ -66,10 +81,18 @@ export default function Page() {
         dbConnectionString,
         createdAt,
         updatedAt,
+        _id,
       });
       setProjectEdit({ mode, name, description, dbConnectionString });
     }
   }, [response]);
+
+  useEffect(() => {
+    if (serverIp?.status === 200) {
+      setServerIpVal(serverIp.data.ip);
+    }
+  }, [serverIp]);
+
   useEffect(() => {
     console.log({ projectEdit });
   }, [projectEdit]);
@@ -150,6 +173,8 @@ export default function Page() {
             toggleEditView={toggleEditView}
             project={project}
             isPending={isPending}
+            serverIp={serverIpVal}
+            isServerIpPending={isServerIpPending}
           />
         )}
       </div>

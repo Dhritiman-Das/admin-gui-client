@@ -6,6 +6,11 @@ const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
 });
 
+export const getServerIP = async () => {
+  const response = await axiosInstance.get("projects/server-ip");
+  return response;
+};
+
 export const getProjectInfo = async (projectId: string, token: string) => {
   const response = await axiosInstance.get(`projects/${projectId}`, {
     headers: {

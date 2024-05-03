@@ -37,3 +37,12 @@ export function safeJsonParse(str: string | undefined) {
     return {};
   }
 }
+
+export function formatDate(date: string): string {
+  const dateObj = new Date(date);
+  return dateObj.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}

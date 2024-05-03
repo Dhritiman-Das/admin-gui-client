@@ -44,7 +44,7 @@ export default function EditValues({
           type="text"
           id="dbConnectionString"
           placeholder="mongodb+srv://<username>:<password>@cluster0.mongodb.net/<dbname>"
-          value={project?.dbConnectionString}
+          value={""}
           onChange={(e) => {
             editProject({ ...project, dbConnectionString: e.target.value });
           }}
