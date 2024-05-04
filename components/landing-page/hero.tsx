@@ -16,8 +16,8 @@ export function Hero() {
             Simplifying Database Access for Customer Support Teams
           </H4>
           <p>
-            Unlock your database's potential with EasyDB. Effortlessly execute{" "}
-            <br />
+            Unlock your database&apos;s potential with EasyDB. Effortlessly
+            execute <br />
             queries, enhance security, and streamline customer support.
           </p>
           <div className="flex gap-4 mt-4">
